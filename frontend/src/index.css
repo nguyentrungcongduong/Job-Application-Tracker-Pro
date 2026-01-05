@@ -1,0 +1,554 @@
+/* ========================================
+   JOB APPLICATION TRACKER PRO - DESIGN SYSTEM
+   ======================================== */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+/* ========================================
+   CSS VARIABLES - DESIGN TOKENS
+   ======================================== */
+:root {
+  --primary-hue: 250;
+  /* Default Purple */
+
+  /* Primary Colors - Dynamic Hue */
+  --primary-50: hsl(var(--primary-hue), 100%, 98%);
+  --primary-100: hsl(var(--primary-hue), 95%, 95%);
+  --primary-200: hsl(var(--primary-hue), 90%, 88%);
+  --primary-300: hsl(var(--primary-hue), 85%, 78%);
+  --primary-400: hsl(var(--primary-hue), 80%, 68%);
+  --primary-500: hsl(var(--primary-hue), 75%, 58%);
+  --primary-600: hsl(var(--primary-hue), 70%, 48%);
+  --primary-700: hsl(var(--primary-hue), 65%, 38%);
+  --primary-800: hsl(var(--primary-hue), 60%, 28%);
+  --primary-900: hsl(var(--primary-hue), 55%, 18%);
+  --primary-rgb: 111, 66, 193;
+  /* Fallback, needs JS update for perfect match */
+
+  /* Accent Colors - Vibrant Cyan */
+  --accent-50: hsl(190, 100%, 98%);
+  --accent-100: hsl(190, 95%, 92%);
+  --accent-200: hsl(190, 90%, 82%);
+  --accent-300: hsl(190, 85%, 72%);
+  --accent-400: hsl(190, 80%, 62%);
+  --accent-500: hsl(190, 75%, 52%);
+  --accent-600: hsl(190, 70%, 42%);
+  --accent-700: hsl(190, 65%, 32%);
+  --accent-800: hsl(190, 60%, 22%);
+  --accent-rgb: 34, 211, 238;
+
+  /* Status Colors */
+  --success-light: hsl(142, 76%, 96%);
+  --success: hsl(142, 76%, 45%);
+  --success-dark: hsl(142, 76%, 35%);
+
+  --warning-light: hsl(38, 92%, 95%);
+  --warning: hsl(38, 92%, 50%);
+  --warning-dark: hsl(38, 92%, 40%);
+
+  --error-light: hsl(0, 84%, 96%);
+  --error: hsl(0, 84%, 60%);
+  --error-dark: hsl(0, 84%, 50%);
+
+  --info-light: hsl(210, 100%, 96%);
+  --info: hsl(210, 100%, 56%);
+  --info-dark: hsl(210, 100%, 46%);
+
+  /* Neutral Colors - Dark Mode Optimized (Default) */
+  --gray-50: hsl(240, 20%, 99%);
+  --gray-100: hsl(240, 15%, 96%);
+  --gray-200: hsl(240, 12%, 92%);
+  --gray-300: hsl(240, 10%, 84%);
+  --gray-400: hsl(240, 8%, 68%);
+  --gray-500: hsl(240, 6%, 52%);
+  --gray-600: hsl(240, 5%, 40%);
+  --gray-700: hsl(240, 6%, 28%);
+  --gray-800: hsl(240, 8%, 18%);
+  --gray-900: hsl(240, 10%, 10%);
+  --gray-950: hsl(240, 12%, 6%);
+
+  /* Background & Surface (Dark Default) */
+  --bg-primary: var(--gray-950);
+  --bg-secondary: var(--gray-900);
+  --bg-tertiary: var(--gray-800);
+  --bg-elevated: hsl(240, 10%, 12%);
+
+  /* Glass Effect */
+  --glass-bg: hsla(240, 10%, 15%, 0.7);
+  --glass-border: hsla(240, 20%, 50%, 0.15);
+
+  /* Text Colors */
+  --text-primary: var(--gray-50);
+  --text-secondary: var(--gray-300);
+  --text-tertiary: var(--gray-400);
+  --text-disabled: var(--gray-600);
+
+  /* Border & Divider */
+  --border-primary: var(--gray-800);
+  --border-secondary: var(--gray-700);
+  --border-focus: var(--primary-500);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(var(--primary-rgb), 0.3);
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Outfit', var(--font-sans);
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index Scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+}
+
+[data-theme='light'] {
+  /* Neutral Colors - Light Mode */
+  --bg-primary: var(--gray-50);
+  --bg-secondary: var(--gray-100);
+  --bg-tertiary: #ffffff;
+  --bg-elevated: #ffffff;
+
+  /* Text Colors */
+  --text-primary: var(--gray-900);
+  --text-secondary: var(--gray-600);
+  --text-tertiary: var(--gray-500);
+  --text-disabled: var(--gray-400);
+
+  /* Border & Divider */
+  --border-primary: var(--gray-200);
+  --border-secondary: var(--gray-300);
+
+  /* Shadows - Lighter for Light Mode */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(200, 200, 200, 0.5);
+}
+
+/* ========================================
+   RESET & BASE STYLES
+   ======================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+/* Animated gradient background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 30%, hsla(250, 75%, 58%, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, hsla(190, 75%, 52%, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, hsla(280, 75%, 58%, 0.04) 0%, transparent 50%);
+  z-index: -1;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* ========================================
+   TYPOGRAPHY
+   ======================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: var(--text-5xl);
+  margin-bottom: var(--space-6);
+}
+
+h2 {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-5);
+}
+
+h3 {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+}
+
+h4 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+h5 {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-3);
+}
+
+h6 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+}
+
+p {
+  margin-bottom: var(--space-4);
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--primary-400);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--primary-300);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Glass Morphism */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary-400), var(--accent-400));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card Styles */
+.card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: all var(--transition-base);
+}
+
+.card:hover {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* Button Base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Button Variants */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--primary-500), var(--primary-400));
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-elevated);
+  border-color: var(--border-focus);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+/* Input Styles */
+.input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px hsla(250, 75%, 58%, 0.1);
+}
+
+.input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: var(--success-light);
+  color: var(--success-dark);
+}
+
+.badge-warning {
+  background: var(--warning-light);
+  color: var(--warning-dark);
+}
+
+.badge-error {
+  background: var(--error-light);
+  color: var(--error-dark);
+}
+
+.badge-info {
+  background: var(--info-light);
+  color: var(--info-dark);
+}
+
+.badge-primary {
+  background: var(--primary-900);
+  color: var(--primary-300);
+  border: 1px solid var(--primary-700);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-700);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-600);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-600);
+  color: white;
+}
+
+/* Focus Visible */
+:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+.animate-slide-in {
+  animation: slideInRight var(--transition-base) ease-out;
+}
+
+/* Loading Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-700);
+  border-top-color: var(--primary-500);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 var(--space-4);
+  }
+}

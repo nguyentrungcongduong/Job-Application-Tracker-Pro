@@ -1,0 +1,118 @@
+/* ========================================
+   MAIN LAYOUT
+   ======================================== */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    background: var(--bg-primary);
+}
+
+.main-content {
+    flex: 1;
+    min-height: 100vh;
+    transition: margin-left var(--transition-base);
+    padding: var(--space-8) var(--space-6);
+    overflow-x: hidden;
+}
+
+.main-content.sidebar-open {
+    margin-left: 280px;
+}
+
+.main-content.sidebar-closed {
+    margin-left: 80px;
+}
+
+/* ========================================
+   PAGE HEADER
+   ======================================== */
+
+.page-header {
+    margin-bottom: var(--space-8);
+    animation: fadeIn var(--transition-base);
+}
+
+.page-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.page-title {
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary-400), var(--accent-400));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   CONTENT SECTIONS
+   ======================================== */
+
+.content-section {
+    margin-bottom: var(--space-8);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-4);
+}
+
+.section-title {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: var(--space-4);
+    }
+
+    .main-content.sidebar-open,
+    .main-content.sidebar-closed {
+        margin-left: 0;
+    }
+
+    .page-title {
+        font-size: var(--text-3xl);
+    }
+
+    .page-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

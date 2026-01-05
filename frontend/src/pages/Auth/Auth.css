@@ -1,0 +1,224 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    animation: blobFloat 20s infinite ease-in-out;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--primary-500);
+    top: -100px;
+    right: -100px;
+}
+
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: var(--accent-500);
+    bottom: -50px;
+    left: -50px;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: hsl(280, 75%, 58%);
+    top: 40%;
+    left: 30%;
+    animation-delay: -10s;
+}
+
+@keyframes blobFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: var(--space-10);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--glass-border);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-8);
+}
+
+.auth-header .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--space-6);
+}
+
+.auth-header .logo-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: var(--space-4);
+    box-shadow: var(--shadow-glow);
+}
+
+.auth-header h2 {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-2);
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+    color: var(--text-secondary);
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    transition: color var(--transition-fast);
+}
+
+.input-wrapper .input {
+    padding-left: var(--space-12);
+}
+
+.input-wrapper:focus-within .input-icon {
+    color: var(--primary-400);
+}
+
+.auth-submit {
+    margin-top: var(--space-4);
+    height: 48px;
+}
+
+.error-message {
+    padding: var(--space-3);
+    background: hsla(0, 84%, 60%, 0.1);
+    border: 1px solid hsla(0, 84%, 60%, 0.2);
+    color: var(--error);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+.auth-separator {
+    position: relative;
+    text-align: center;
+    margin: var(--space-8) 0;
+}
+
+.auth-separator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--border-primary);
+    z-index: 0;
+}
+
+.auth-separator span {
+    position: relative;
+    background: var(--bg-secondary);
+    padding: 0 var(--space-4);
+    color: var(--text-tertiary);
+    font-size: var(--text-xs);
+    z-index: 1;
+}
+
+.social-auth {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+}
+
+.social-btn {
+    width: 54px;
+    height: 54px;
+    padding: 0;
+}
+
+.auth-footer {
+    text-align: center;
+    font-size: var(--text-sm);
+}
+
+.auth-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--primary-400);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    transition: color var(--transition-fast);
+}
+
+.auth-toggle-btn:hover {
+    color: var(--primary-300);
+    text-decoration: underline;
+}
+
+.w-full {
+    width: 100%;
+}

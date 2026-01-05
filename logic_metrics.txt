@@ -1,0 +1,782 @@
+1. Active Applications
+Definition: Tất cả applications đang trong process (chưa kết thúc)
+javascriptActive Applications = 
+  CV in Progress +
+  Applied +
+  HR Screen +
+  Interview Round 1 +
+  Interview Round 2 +
+  Final Interview +
+  Offer Received
+
+// Exclude: Wishlist, Offer Accepted, Rejected, Withdrawn
+```
+
+**Với data của bạn:**
+```
+= 0 + 2 + 1 + 2 + 1 + 1 + 1 = 8 applications
+```
+
+**Display:**
+```
+┌─────────────────────────┐
+│ Active Applications     │
+│       8                 │
+│ +2 this week           │
+└─────────────────────────┘
+
+2. Interviews Scheduled
+Definition: Số cuộc interview đã/sắp diễn ra (có lịch cụ thể)
+javascriptInterviews Scheduled = 
+  Interview Round 1 +
+  Interview Round 2 +
+  Final Interview
+
+// Chỉ count nếu có interview_date được set
+```
+
+**Với data của bạn:**
+```
+= 2 + 1 + 1 = 4 interviews
+Advanced logic:
+javascript// Chia ra:
+- Upcoming (chưa diễn ra): 2
+- Completed (đã xong, chờ kết quả): 2
+
+// Ví dụ:
+┌─────────────────────────────┐
+│ Interviews Scheduled        │
+│         4                   │
+│                             │
+│ 🔴 This week: 2             │
+│ 🟢 Completed: 2             │
+└─────────────────────────────┘
+```
+
+**Better alternative - Calendar view:**
+```
+┌────────────────────────────────┐
+│ Interviews Scheduled           │
+│        4                       │
+│                                │
+│ TODAY (Jan 6)                  │
+│ • Google - Round 2 at 2PM      │
+│                                │
+│ THIS WEEK                      │
+│ • Meta - Final at Jan 8, 10AM  │
+└────────────────────────────────┘
+
+3. Response Rate
+Option A: Overall Response Rate
+javascriptResponse Rate = 
+  (Applications với response) / (Total Applied) × 100%
+
+Response = HR Screen + Interview + Offer Received
+Total Applied = Applied + HR Screen + All Interviews + Offers + Rejected
+```
+
+**Với data của bạn:**
+```
+Applications with response = 1 + 2 + 1 + 1 + 1 + 1 = 7
+Total submitted = 2 + 1 + 2 + 1 + 1 + 1 + 1 = 9
+
+Response Rate = 7/9 × 100% = 77.8% ≈ 78% ✅
+Option B: HR Screen Rate (More practical)
+javascriptHR Screen Rate = 
+  (Got HR Screen or beyond) / (Applied) × 100%
+
+= (1 HR + 2 R1 + 1 R2 + 1 Final + 1 Offer) / (2 Applied + 6 beyond) × 100%
+= 6/8 = 75%
+Option C: 30-day Response Rate (Best!)
+javascript// Chỉ count applications nộp trong 30 ngày gần nhất
+// Loại bỏ các đơn "ghosted" (>30 days, no response)
+
+Response Rate (30 days) = 
+  (Responded within 30 days) / (Applied in last 30 days) × 100%
+```
+
+**Display recommendation:**
+```
+┌─────────────────────────────┐
+│ Response Rate               │
+│      78%                    │
+│ ↑ +5% vs last month         │
+│                             │
+│ 💡 7/9 companies replied    │
+└─────────────────────────────┘
+
+// Tooltip on hover:
+"Companies respond to your application 
+78% of the time (above 45% average)"
+
+4. Avg. Fit Score
+Calculation Logic:
+javascript// Mỗi application có fit_score (0-100%)
+// Tính từ keyword matching + user manual input
+
+Avg Fit Score = 
+  SUM(fit_score of all active applications) / 
+  COUNT(active applications)
+Example data:
+javascriptconst applications = [
+  { company: "Google", position: "Senior SE", fit_score: 85 },
+  { company: "Meta", position: "Full Stack", fit_score: 92 },
+  { company: "Stripe", position: "Backend", fit_score: 78 },
+  { company: "Amazon", position: "SDE II", fit_score: 72 },
+  // ... 4 more with scores: 88, 91, 65, 83
+];
+
+Average = (85 + 92 + 78 + 72 + 88 + 91 + 65 + 83) / 8 = 81.75% ≈ 82%
+```
+
+**Better breakdown:**
+```
+┌─────────────────────────────────┐
+│ Avg. Fit Score                  │
+│      82%                        │
+│ ↑ +3.2 pts this week            │
+│                                 │
+│ 🟢 High (80-100%): 5 jobs       │
+│ 🟡 Medium (60-79%): 2 jobs      │
+│ 🔴 Low (<60%): 1 job            │
+│                                 │
+│ 💡 Focus on high-fit roles!     │
+└─────────────────────────────────┘
+Advanced: Weighted by stage
+javascript// Applications ở stage cao hơn = quan trọng hơn
+const weights = {
+  'Applied': 1,
+  'HR Screen': 2,
+  'Interview Round 1': 3,
+  'Interview Round 2': 4,
+  'Final Interview': 5,
+  'Offer Received': 6
+};
+
+Weighted Avg = 
+  SUM(fit_score × stage_weight) / 
+  SUM(stage_weight)
+
+// Focus vào những đơn đang tiến xa nhất
+```
+
+---
+
+## 🎯 **COMPLETE METRIC CARD DESIGNS**
+
+### **Card 1: Active Applications**
+```
+┌─────────────────────────────────┐
+│ 📊 Active Applications          │
+│        8                        │
+│ +2 this week | -1 rejected     │
+│                                 │
+│ Pipeline:                       │
+│ ████████░░ 80% in interviews    │
+└─────────────────────────────────┘
+
+Click → Show breakdown:
+- HR Screen: 1
+- Interview R1: 2  
+- Interview R2: 1
+- Final: 1
+- Offer: 1
+```
+
+### **Card 2: Interviews Scheduled**
+```
+┌─────────────────────────────────┐
+│ 📅 Interviews Scheduled         │
+│        4                        │
+│ +1 this week                    │
+│                                 │
+│ 🔴 URGENT: 2 within 48 hours    │
+│ [View Calendar →]               │
+└─────────────────────────────────┘
+```
+
+### **Card 3: Response Rate**
+```
+┌─────────────────────────────────┐
+│ 📈 Response Rate                │
+│       78%                       │
+│ ↑ +5% (Industry avg: 45%)       │
+│                                 │
+│ 7 of 9 companies replied        │
+│ 2 waiting response (3-5 days)   │
+└─────────────────────────────────┘
+```
+
+### **Card 4: Avg. Fit Score**
+```
+┌─────────────────────────────────┐
+│ 🎯 Avg. Fit Score               │
+│       82%                       │
+│ ↑ +3.2 pts                      │
+│                                 │
+│ 🟢 5 high-fit | 🟡 2 med | 🔴 1 low │
+│ [See recommendations →]         │
+└─────────────────────────────────┘
+
+💡 BONUS: ADDITIONAL USEFUL METRICS
+5. Success Rate (Conversion)
+javascriptSuccess Rate = 
+  (Offer Received + Offer Accepted) / 
+  (Total Applied - Withdrawn) × 100%
+
+Với data của bạn:
+= (1 + 0) / (9 - 0) = 11.1%
+
+// Industry avg: 2-5% → Bạn đang làm VERY GOOD! 🎉
+6. Average Time to Offer
+javascriptAvg Days = 
+  SUM(days from Applied to Offer) / 
+  COUNT(offers)
+
+Example:
+Google: 23 days
+Meta: 15 days
+Average: 19 days
+7. Top Performing Source
+javascript// Dựa vào Source Performance pie chart
+Conversion by source:
+- LinkedIn: 20% (highest)
+- Company Website: 15%
+- Referral: 40% (best!)
+- Indeed: 5%
+
+💡 Insight: "Referrals 2x more effective"
+```
+
+---
+
+## 🔥 **ADVANCED FEATURES**
+
+### **8. Predictive Metrics**
+```
+┌─────────────────────────────────────┐
+│ 🔮 Projected Offers (Next 30 days)  │
+│        2-3 offers                   │
+│                                     │
+│ Based on:                           │
+│ • 4 final interviews scheduled      │
+│ • Your 82% avg fit score            │
+│ • 78% response rate                 │
+└─────────────────────────────────────┘
+```
+
+### **9. Smart Alerts**
+```
+🚨 Applications needing attention:
+- Amazon SDE - No response 14 days → Follow up
+- Google - Interview tomorrow → Prepare questions
+- Stripe - Offer expires in 3 days → Make decision
+
+
+
+
+
+//////
+
+📊 ADVANCED METRICS CALCULATIONS
+1. Avg. Response Time ⏱️
+Definition: Thời gian trung bình từ khi nộp đơn đến khi nhận được phản hồi đầu tiên
+javascriptAvg Response Time = 
+  SUM(first_response_date - applied_date) / 
+  COUNT(applications with response)
+
+// First response = HR Screen, Interview, hoặc Rejection
+Calculation với data của bạn:
+javascriptconst applications = [
+  { company: "Google", applied: "2025-01-01", first_response: "2025-01-03", days: 2 },
+  { company: "Meta", applied: "2025-12-28", first_response: "2025-01-05", days: 8 },
+  { company: "Stripe", applied: "2025-12-25", first_response: "2025-01-02", days: 8 },
+  { company: "Amazon", applied: "2025-12-20", first_response: null, days: 17 }, // Still waiting
+  // ... more
+];
+
+// Exclude "still waiting" applications
+Responded apps = [2, 8, 8, 5, 3, 12, 7] days
+Average = (2+8+8+5+3+12+7) / 7 = 6.4 days ≈ 6 days
+```
+
+**Smart Display:**
+```
+┌─────────────────────────────────┐
+│ ⏱️ Avg. Response Time           │
+│        6 days                   │
+│ ↓ -2 days vs last month 🎉     │
+│                                 │
+│ Fastest: Google (2 days)        │
+│ Slowest: Amazon (17 days)       │
+│                                 │
+│ 💡 2 apps waiting >14 days      │
+│    [Send follow-up →]           │
+└─────────────────────────────────┘
+```
+
+**Breakdown by company:**
+```
+┌─────────────────────────────────┐
+│ Response Time by Company        │
+├─────────────────────────────────┤
+│ Google     ████░░░░░░ 2 days    │
+│ Stripe     ████████░░ 8 days    │
+│ Meta       ████████░░ 8 days    │
+│ Amazon     🔴 Still waiting (17d)│
+└─────────────────────────────────┘
+
+2. Interview Success Rate 📈
+Definition: Tỷ lệ chuyển đổi từ interview sang offer
+javascriptInterview Success Rate = 
+  (Offers Received) / 
+  (Total Interviews Conducted) × 100%
+
+// Interviews Conducted = Completed interviews (not upcoming)
+Calculation:
+javascript// Với pipeline của bạn:
+Total Interviews = Interview R1 + R2 + Final (completed only)
+Offers = Offer Received + Offer Accepted
+
+Assumptions:
+- Completed interviews: 4 (from past data)
+- Offers: 1
+
+Interview Success = 1/4 × 100% = 25%
+Better breakdown - By round:
+javascriptRound 1 → Round 2: 50% (2 out of 4 moved forward)
+Round 2 → Final: 100% (1 out of 1)
+Final → Offer: 100% (1 out of 1)
+
+Overall conversion: 25%
+```
+
+**Display:**
+```
+┌─────────────────────────────────┐
+│ 📈 Interview Success Rate       │
+│       25%                       │
+│ 1 offer from 4 interviews       │
+│                                 │
+│ Conversion by stage:            │
+│ R1→R2:    50% ████████░░        │
+│ R2→Final: 100% ██████████       │
+│ Final→Offer: 100% ██████████    │
+│                                 │
+│ 💡 Industry avg: 15-20%         │
+│    You're doing great! ✅        │
+└─────────────────────────────────┘
+```
+
+**Advanced - Success by company type:**
+```
+Startups: 40% (2/5 interviews)
+Big Tech: 17% (1/6 interviews)
+Mid-size: 33% (1/3 interviews)
+
+💡 Insight: You perform better at startups
+
+3. Offers / Applications Ratio 🎯
+Definition: Overall conversion rate - "Batting average"
+javascriptOffer Rate = 
+  (Offer Received + Offer Accepted) / 
+  (Total Applications Submitted) × 100%
+
+// Exclude: Wishlist, CV in Progress, Withdrawn
+Calculation:
+javascriptTotal Submitted = Applied + HR + All Interviews + Offers + Rejected
+= 2 + 1 + 2 + 1 + 1 + 1 + 0 + 1 = 9 applications
+
+Offers = 1
+
+Offer Rate = 1/9 × 100% = 11.1% ≈ 11%
+```
+
+**Industry benchmarks:**
+```
+Entry level: 2-5%
+Mid level: 5-10%
+Senior level: 10-15%
+
+Your 11% = EXCELLENT for mid-senior level! 🎉
+```
+
+**Display:**
+```
+┌─────────────────────────────────┐
+│ 🎯 Offers / Applications        │
+│       11%                       │
+│ 1 offer from 9 applications     │
+│                                 │
+│ Your funnel:                    │
+│ 9 Applied                       │
+│ ↓ 78% response                  │
+│ 7 Responded                     │
+│ ↓ 57% interview                 │
+│ 4 Interviewed                   │
+│ ↓ 25% offer                     │
+│ 1 Offer 🎉                      │
+│                                 │
+│ 💡 2.2x better than avg (5%)    │
+└─────────────────────────────────┘
+```
+
+**Comparison chart:**
+```
+┌─────────────────────────────────┐
+│ You vs Market                   │
+├─────────────────────────────────┤
+│ You         ████████████ 11%    │
+│ Market avg  ████░░░░░░░░ 5%     │
+│ Top 10%     ███████████████ 15% │
+│                                 │
+│ 📍 You're in top 25%            │
+└─────────────────────────────────┘
+
+4. Next Interview 📅
+Definition: Countdown đến interview tiếp theo + Quick prep
+javascriptNext Interview = 
+  Find earliest upcoming interview_date 
+  where interview_date > today
+  AND status IN (Interview R1, R2, Final)
+```
+
+**Smart Display:**
+```
+┌─────────────────────────────────┐
+│ 📅 Next Interview               │
+│                                 │
+│ 🔴 TOMORROW, Jan 7              │
+│    at 2:00 PM (in 18 hours)     │
+│                                 │
+│ 💼 Senior Software Engineer     │
+│    at Google                    │
+│                                 │
+│ 📍 Round 2 - Technical          │
+│    Duration: 45 mins            │
+│    Interviewer: Sarah Chen      │
+│                                 │
+│ [📝 Review Notes]               │
+│ [🎯 Practice Questions]         │
+│ [📧 Send Confirmation]          │
+└─────────────────────────────────┘
+```
+
+**Countdown variations:**
+```
+If < 24 hours:
+🔴 TOMORROW at 2:00 PM (18 hours)
+
+If < 2 hours:
+🔴 TODAY at 2:00 PM (1h 30m) - GET READY!
+
+If today:
+🔴 TODAY at 2:00 PM 
+   [Join Video Call →]
+
+If this week:
+🟡 Thursday, Jan 9 at 10:00 AM (3 days)
+
+If > 1 week:
+🟢 Next week - Jan 15 at 3:00 PM
+```
+
+**Expanded view - All upcoming:**
+```
+┌─────────────────────────────────┐
+│ 📅 Upcoming Interviews (4)      │
+├─────────────────────────────────┤
+│ 🔴 Tomorrow 2PM - Google R2     │
+│ 🟡 Jan 9, 10AM - Meta Final     │
+│ 🟢 Jan 12, 3PM - Amazon R1      │
+│ 🟢 Jan 15, 11AM - Stripe R1     │
+│                                 │
+│ [📅 View Full Calendar]         │
+└─────────────────────────────────┘
+```
+
+**Prep checklist:**
+```
+┌─────────────────────────────────┐
+│ Google - Round 2 (Tomorrow)     │
+├─────────────────────────────────┤
+│ ✅ Reviewed company research    │
+│ ✅ Practiced system design      │
+│ ⬜ Prepared questions to ask    │
+│ ⬜ Tested video call setup      │
+│ ⬜ Printed resume copies        │
+│                                 │
+│ Readiness: 60% ██████░░░░       │
+└─────────────────────────────────┘
+```
+
+---
+
+## 📈 **APPLICATION VELOCITY CHART**
+
+**Definition:** Hiển thị momentum - bạn đang apply nhiều hay ít? Interview rate như thế nào?
+
+### **Chart Design:**
+```
+Application Velocity
+New applications vs. Interviews over the last 30 days
+
+     12│              📤 Applied
+       │              👥 Interviews
+     10│
+       │          
+      8│     ●         
+       │    ╱ ╲       ●
+      6│   ╱   ╲     ╱ ╲
+       │  ╱     ●   ╱   ╲
+      4│ ╱       ╲ ╱     ●
+       │╱         ●       ╲
+      2│                   ●
+       │________________________
+        Week1 Week2 Week3 Week4
+Data structure:
+javascriptconst velocityData = [
+  { 
+    week: "Dec 9-15", 
+    applications: 4, 
+    interviews: 1,
+    offers: 0
+  },
+  { 
+    week: "Dec 16-22", 
+    applications: 8, 
+    interviews: 2,
+    offers: 0
+  },
+  { 
+    week: "Dec 23-29", 
+    applications: 3, 
+    interviews: 3,
+    offers: 1
+  },
+  { 
+    week: "Dec 30-Jan 5", 
+    applications: 2, 
+    interviews: 4,
+    offers: 0
+  }
+];
+```
+
+**Insights panel:**
+```
+┌─────────────────────────────────────┐
+│ 📊 Velocity Insights                │
+├─────────────────────────────────────┤
+│ This week:                          │
+│ • 2 new applications (↓ 33%)        │
+│ • 4 interviews scheduled (↑ 100%)   │
+│                                     │
+│ Trend: Interview phase 🎯           │
+│ → Focus on existing pipeline        │
+│                                     │
+│ 💡 Recommendation:                  │
+│   Apply to 3-5 more jobs to keep    │
+│   funnel full for next month        │
+└─────────────────────────────────────┘
+```
+
+**Advanced - Stacked area chart:**
+```
+  12│                           
+    │          ┌─────────┐ Offers
+  10│          │█████████│
+    │      ┌───┤█████████├───┐ Interviews
+   8│      │███│█████████│███│
+    │  ┌───┤███│█████████│███├───┐
+   6│  │███│███│█████████│███│███│ Applications
+    │  │███│███│█████████│███│███│
+   4│  │███│███│█████████│███│███│
+    │__│███│███│█████████│███│███│___
+      W1  W2  W3    W4    W5  W6
+```
+
+---
+
+## 🎨 **COMPLETE DASHBOARD LAYOUT**
+```
+┌──────────────────────────────────────────────────────────────┐
+│ Dashboard - Track your job search progress                   │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│ │ Active   │ │Interview │ │Response  │ │Avg. Fit  │       │
+│ │ Apps: 8  │ │Sched: 4  │ │Rate: 78% │ │Score:82% │       │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘       │
+│                                                              │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐       │
+│ │Avg Resp  │ │Interview │ │Offers/   │ │Next      │       │
+│ │Time: 6d  │ │Success:  │ │Apps:     │ │Interview │       │
+│ │          │ │25%       │ │11%       │ │Tomorrow  │       │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘       │
+│                                                              │
+│ ┌───────────────────────────────────────────────────────┐  │
+│ │ Application Velocity (Last 30 days)                    │  │
+│ │ [Line chart: Applications vs Interviews]              │  │
+│ └───────────────────────────────────────────────────────┘  │
+│                                                              │
+│ ┌────────────────────┐ ┌─────────────────────────────────┐ │
+│ │Application Funnel  │ │Source Performance               │ │
+│ │[Bar chart]         │ │[Pie chart]                      │ │
+│ └────────────────────┘ └─────────────────────────────────┘ │
+│                                                              │
+│ ┌──────────────────────────────────────────────────────────┐│
+│ │ Weekly Activity                                          ││
+│ │ [Line graph showing daily submissions]                   ││
+│ └──────────────────────────────────────────────────────────┘│
+│                                                              │
+│ ┌──────────────────────────────────────────────────────────┐│
+│ │ Recent Activity                                          ││
+│ │ • zc2 at zc2 - Applied - 1/6/2025                       ││
+│ │ • Senior SE at Google - Interview R2 - 1/3/2025  [85%] ││
+│ │ • Full Stack at Meta - Offer Received - 1/6/2025 [92%] ││
+│ └──────────────────────────────────────────────────────────┘│
+└──────────────────────────────────────────────────────────────┘
+
+💻 IMPLEMENTATION CODE
+javascript// 1. Avg Response Time
+const getAvgResponseTime = (applications) => {
+  const responded = applications.filter(app => 
+    app.first_response_date && app.applied_date
+  );
+  
+  const totalDays = responded.reduce((sum, app) => {
+    const days = Math.floor(
+      (new Date(app.first_response_date) - new Date(app.applied_date)) 
+      / (1000 * 60 * 60 * 24)
+    );
+    return sum + days;
+  }, 0);
+  
+  return responded.length > 0 ? Math.round(totalDays / responded.length) : 0;
+};
+
+// 2. Interview Success Rate
+const getInterviewSuccessRate = (applications) => {
+  const interviewed = applications.filter(app =>
+    ['interview_round_1', 'interview_round_2', 'final_interview', 
+     'offer_received', 'offer_accepted'].includes(app.status)
+  );
+  
+  const offers = applications.filter(app =>
+    ['offer_received', 'offer_accepted'].includes(app.status)
+  );
+  
+  return interviewed.length > 0 
+    ? ((offers.length / interviewed.length) * 100).toFixed(1)
+    : 0;
+};
+
+// 3. Offers / Applications
+const getOfferRate = (applications) => {
+  const submitted = applications.filter(app =>
+    app.status !== 'wishlist' && 
+    app.status !== 'cv_in_progress' &&
+    app.status !== 'withdrawn'
+  );
+  
+  const offers = applications.filter(app =>
+    ['offer_received', 'offer_accepted'].includes(app.status)
+  );
+  
+  return submitted.length > 0
+    ? ((offers.length / submitted.length) * 100).toFixed(1)
+    : 0;
+};
+
+// 4. Next Interview
+const getNextInterview = (applications) => {
+  const now = new Date();
+  
+  const upcomingInterviews = applications
+    .filter(app => 
+      ['interview_round_1', 'interview_round_2', 'final_interview'].includes(app.status) &&
+      app.interview_date &&
+      new Date(app.interview_date) > now
+    )
+    .sort((a, b) => new Date(a.interview_date) - new Date(b.interview_date));
+  
+  return upcomingInterviews[0] || null;
+};
+
+// 5. Application Velocity Data
+const getVelocityData = (applications, days = 30) => {
+  const now = new Date();
+  const startDate = new Date(now - days * 24 * 60 * 60 * 1000);
+  
+  // Group by week
+  const weeks = [];
+  for (let i = 0; i < 4; i++) {
+    const weekStart = new Date(startDate);
+    weekStart.setDate(weekStart.getDate() + (i * 7));
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    const weekApps = applications.filter(app => {
+      const appDate = new Date(app.applied_date);
+      return appDate >= weekStart && appDate <= weekEnd;
+    });
+    
+    const weekInterviews = applications.filter(app => {
+      const intDate = new Date(app.interview_date);
+      return intDate >= weekStart && intDate <= weekEnd;
+    });
+    
+    weeks.push({
+      week: `${weekStart.getMonth()+1}/${weekStart.getDate()}`,
+      applications: weekApps.length,
+      interviews: weekInterviews.length
+    });
+  }
+  
+  return weeks;
+};
+
+🎯 INSIGHTS & ALERTS
+Smart notifications based on metrics:
+javascriptconst generateInsights = (metrics) => {
+  const insights = [];
+  
+  // Avg Response Time alert
+  if (metrics.avgResponseTime > 14) {
+    insights.push({
+      type: 'warning',
+      message: '2 companies haven\'t responded in 14+ days. Consider following up.',
+      action: 'Send Follow-up'
+    });
+  }
+  
+  // Interview Success alert
+  if (metrics.interviewSuccess < 15) {
+    insights.push({
+      type: 'tip',
+      message: 'Interview conversion is low. Review your interview prep strategy.',
+      action: 'Get Tips'
+    });
+  }
+  
+  // Velocity alert
+  if (metrics.thisWeekApps < 3) {
+    insights.push({
+      type: 'reminder',
+      message: 'Only 2 applications this week. Apply to 3-5 more to maintain momentum.',
+      action: 'Browse Jobs'
+    });
+  }
+  
+  // Next Interview alert
+  if (metrics.nextInterview?.hoursUntil < 24) {
+    insights.push({
+      type: 'urgent',
+      message: 'Interview tomorrow! Make sure you\'re prepared.',
+      action: 'Review Prep'
+    });
+  }
+  
+  return insights;
+};

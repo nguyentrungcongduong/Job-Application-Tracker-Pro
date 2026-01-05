@@ -1,0 +1,245 @@
+// ========================================
+// TYPE DEFINITIONS
+// ========================================
+
+export type ApplicationStatus =
+  | 'WISHLIST'
+  | 'CV_IN_PROGRESS'
+  | 'APPLIED'
+  | 'HR_SCREEN'
+  | 'INTERVIEW_1'
+  | 'INTERVIEW_2'
+  | 'FINAL_INTERVIEW'
+  | 'OFFER_RECEIVED'
+  | 'OFFER_ACCEPTED'
+  | 'REJECTED'
+  | 'WITHDRAWN';
+
+export type Priority = 'HIGH' | 'MEDIUM' | 'LOW';
+
+export type InterviewType = 'ONLINE' | 'ONSITE' | 'PHONE';
+
+export type ApplicationSource =
+  | 'LINKEDIN'
+  | 'INDEED'
+  | 'GLASSDOOR'
+  | 'COMPANY_WEBSITE'
+  | 'REFERRAL'
+  | 'RECRUITER'
+  | 'OTHER';
+
+// ========================================
+// CORE ENTITIES
+// ========================================
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: 'BASIC' | 'PRO' | 'ADMIN';
+  createdAt: string;
+  onboarded: boolean;
+  avatar?: string;
+}
+
+export interface JobApplication {
+  id: string;
+  userId: string;
+  companyName: string;
+  position: string;
+  status: ApplicationStatus;
+  appliedDate: string;
+  jdLink?: string;
+  jdText?: string;
+  source: ApplicationSource;
+  salaryExpectation?: number;
+  priority: Priority;
+  tags: string[];
+  cvVersion?: string;
+  coverLetter?: string;
+  recruiterContact?: string;
+  notes?: string;
+  fitScore?: number;
+  firstResponseDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Interview {
+  id: string;
+  applicationId: string;
+  round: number;
+  interviewDate: string;
+  interviewerName?: string;
+  interviewerTitle?: string;
+  interviewType: InterviewType;
+  questions: string[];
+  selfAnswers?: string[];
+  feedback?: string;
+  confidenceScore?: number; // 1-5
+  fitScore?: number; // 1-5
+  wantContinue: boolean;
+  salaryDiscussed?: number;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface FollowUp {
+  id: string;
+  applicationId: string;
+  remindAt: string;
+  sent: boolean;
+  channel: 'EMAIL' | 'IN_APP';
+  message?: string;
+  createdAt: string;
+}
+
+export interface FitScoreAnalysis {
+  score: number; // 0-100
+  cvJdMatch: number;
+  selfRating: number;
+  processSignal: number;
+  explanation: string[];
+  strengths: string[];
+  weaknesses: string[];
+  recommendations: string[];
+}
+
+// ========================================
+// ANALYTICS & DASHBOARD
+// ========================================
+
+export interface DashboardStats {
+  totalApplications: number;
+  activeApplications: number;
+  interviewsScheduled: number;
+  offersReceived: number;
+  responseRate: number;
+  averageFitScore: number;
+}
+
+export interface FunnelData {
+  stage: ApplicationStatus;
+  count: number;
+  percentage: number;
+}
+
+export interface SourcePerformance {
+  source: ApplicationSource;
+  applications: number;
+  interviews: number;
+  offers: number;
+  conversionRate: number;
+}
+
+export interface TimelineEvent {
+  id: string;
+  applicationId: string;
+  type: 'STATUS_CHANGE' | 'INTERVIEW' | 'FOLLOW_UP' | 'NOTE';
+  title: string;
+  description?: string;
+  timestamp: string;
+}
+
+// ========================================
+// API TYPES
+// ========================================
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  name: string;
+  email: string;
+  onboarded: boolean;
+}
+
+// ========================================
+// FORM TYPES
+// ========================================
+
+export interface ApplicationFormData {
+  companyName: string;
+  position: string;
+  status: ApplicationStatus;
+  appliedDate: string;
+  jdLink?: string;
+  jdText?: string;
+  source: ApplicationSource;
+  salaryExpectation?: number;
+  priority: Priority;
+  tags: string[];
+  cvVersion?: string;
+  recruiterContact?: string;
+  notes?: string;
+}
+
+export interface InterviewFormData {
+  round: number;
+  interviewDate: string;
+  interviewerName?: string;
+  interviewerTitle?: string;
+  interviewType: InterviewType;
+  questions: string[];
+  selfAnswers?: string[];
+  feedback?: string;
+  confidenceScore?: number;
+  fitScore?: number;
+  wantContinue: boolean;
+  salaryDiscussed?: number;
+  notes?: string;
+}
+
+// ========================================
+// FILTER & SORT TYPES
+// ========================================
+
+export interface ApplicationFilters {
+  status?: ApplicationStatus[];
+  priority?: Priority[];
+  source?: ApplicationSource[];
+  tags?: string[];
+  dateFrom?: string;
+  dateTo?: string;
+  minFitScore?: number;
+  search?: string;
+}
+
+export type SortField =
+  | 'appliedDate'
+  | 'companyName'
+  | 'position'
+  | 'fitScore'
+  | 'priority'
+  | 'updatedAt';
+
+export type SortOrder = 'asc' | 'desc';
+
+export interface SortOptions {
+  field: SortField;
+  order: SortOrder;
+}

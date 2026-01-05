@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: Job Application Tracker Pro API
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/job_tracker
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  # Mail Configuration (Gmail Example)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: congduongnguyentrung@gmail.com
+    password: wwlb jeqo fyzk dmfk
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours
