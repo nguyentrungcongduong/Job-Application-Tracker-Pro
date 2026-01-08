@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApplicationStore } from '../../store';
 import { Calendar, GripVertical, ChevronRight, DollarSign, MapPin, TrendingUp } from 'lucide-react';
 import { KANBAN_COLUMNS, STATUS_CONFIG, PRIORITY_CONFIG, SOURCE_CONFIG, getFitScoreLevel } from '../../constants';
@@ -8,6 +8,41 @@ import { format } from 'date-fns';
 interface ApplicationTableProps {
   searchQuery: string;
 }
+
+const HorizontalTableWrapper = ({ children }: { children: React.ReactNode }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.deltaX !== 0) return;
+    
+    // Check if we are over a vertically scrollable element
+    const path = e.nativeEvent.composedPath() as HTMLElement[];
+    for (const el of path) {
+      if (el === scrollRef.current) break;
+      if (el.scrollHeight > el.clientHeight) {
+        const style = window.getComputedStyle(el);
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+          return; // Let vertical scroll happen
+        }
+      }
+    }
+
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
+  return (
+    <div 
+      className="table-wrapper" 
+      ref={scrollRef} 
+      onWheel={handleWheel}
+      style={{ overflowX: 'auto' }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const ApplicationTable = ({ searchQuery: _searchQuery }: ApplicationTableProps) => {
   const { filters: _filters, getFilteredApplications, selectApplication, updateApplication } = useApplicationStore();
@@ -63,7 +98,7 @@ const ApplicationTable = ({ searchQuery: _searchQuery }: ApplicationTableProps) 
                   <p>Drop applications here to move to {config.label}</p>
                 </div>
               ) : (
-                <div className="table-wrapper">
+                <HorizontalTableWrapper>
                   <table className="w-full">
                     <tbody>
                       {apps.map((app) => {
@@ -99,7 +134,10 @@ const ApplicationTable = ({ searchQuery: _searchQuery }: ApplicationTableProps) 
                               <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-2 text-xs text-secondary">
                                   <Calendar size={12} />
-                                  <span>{format(new Date(app.appliedDate), 'MMM dd, yyyy')}</span>
+                                <span>{(() => {
+                                    const d = new Date(app.appliedDate);
+                                    return isNaN(d.getTime()) ? 'Invalid Date' : format(d, 'MMM dd, yyyy');
+                                })()}</span>
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-secondary">
                                   <MapPin size={12} />
@@ -167,7 +205,7 @@ const ApplicationTable = ({ searchQuery: _searchQuery }: ApplicationTableProps) 
                       })}
                     </tbody>
                   </table>
-                </div>
+                </HorizontalTableWrapper>
               )}
             </div>
           </div>

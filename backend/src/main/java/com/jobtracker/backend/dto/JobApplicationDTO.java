@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,4 +32,8 @@ public class JobApplicationDTO {
     private String recruiterContact;
     private String notes;
     private Integer fitScore;
+    private List<String> missingSkills;
+    private String jdText;
+    private Boolean followUpSent;
+    private LocalDateTime interviewReminder;
 }

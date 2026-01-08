@@ -1,26 +1,39 @@
 import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Briefcase, 
-  BarChart3, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Briefcase,
+  BarChart3,
+  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  FileText,
+  Bell
 } from 'lucide-react';
 import { useUIStore } from '../../store';
 import { useAuthStore } from '../../store';
+import { useNotificationStore } from '../../store/notificationStore';
+import { useEffect } from 'react';
+import Logo from './Logo';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const { sidebarOpen, toggleSidebar } = useUIStore();
   const { user, logout } = useAuthStore();
+  const { unreadCount, fetchUnreadCount } = useNotificationStore();
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/applications', icon: Briefcase, label: 'Applications' },
+    { to: '/resumes', icon: FileText, label: 'Resumes' },
     { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+    { to: '/notifications', icon: Bell, label: 'Notifications', badge: unreadCount > 0 ? unreadCount : null },
     { to: '/settings', icon: Settings, label: 'Settings' }
   ];
 
@@ -30,7 +43,7 @@ const Sidebar = () => {
         {sidebarOpen && (
           <div className="sidebar-logo">
             <div className="logo-icon">
-              <Sparkles size={24} />
+              <Logo size={44} />
             </div>
             <div className="logo-text">
               <h1 className="gradient-text">JobTracker</h1>
@@ -38,7 +51,7 @@ const Sidebar = () => {
             </div>
           </div>
         )}
-        <button 
+        <button
           className="sidebar-toggle btn-ghost"
           onClick={toggleSidebar}
           aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
@@ -52,7 +65,7 @@ const Sidebar = () => {
           <NavLink
             key={item.to}
             to={item.to}
-            className={({ isActive }) => 
+            className={({ isActive }) =>
               `nav-item ${isActive ? 'active' : ''}`
             }
           >
@@ -80,8 +93,8 @@ const Sidebar = () => {
             </div>
           </div>
         )}
-        
-        <button 
+
+        <button
           className="btn-ghost logout-btn"
           onClick={logout}
           title="Logout"

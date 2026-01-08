@@ -3,163 +3,164 @@
    ======================================== */
 
 .application-card {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-    padding: var(--space-4);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    animation: fadeIn var(--transition-base);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  animation: fadeIn var(--transition-base);
 }
 
 .application-card:hover {
-    border-color: var(--primary-500);
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-2px);
+  border-color: var(--primary-500);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
 }
 
 .application-card.dragging {
-    opacity: 0.5;
-    transform: rotate(2deg);
+  opacity: 0.5;
+  transform: rotate(2deg);
 }
 
 /* Card Header */
 .card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: var(--space-3);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
 }
 
 .company-info {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-    flex: 1;
-    min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
 }
 
 .company-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-md);
-    background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 700;
-    font-size: var(--text-base);
-    flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: var(--text-base);
+  flex-shrink: 0;
 }
 
 .company-name {
-    font-size: var(--text-base);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0 0 var(--space-1) 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-1) 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .position-title {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .priority-indicator {
-    font-size: var(--text-lg);
-    flex-shrink: 0;
+  font-size: var(--text-lg);
+  flex-shrink: 0;
 }
 
 /* Card Meta */
 .card-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    margin-bottom: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .meta-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
 }
 
 .meta-item svg {
-    flex-shrink: 0;
+  flex-shrink: 0;
 }
 
 /* Card Tags */
 .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin-bottom: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .tag {
-    font-size: 10px;
-    padding: 2px var(--space-2);
+  font-size: 10px;
+  padding: 2px var(--space-2);
 }
 
 /* Card Footer - Fit Score */
 .card-footer {
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--border-primary);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-primary);
 }
 
 .fit-score {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-xs);
-    margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2);
 }
 
 .fit-score-label {
-    color: var(--text-tertiary);
+  color: var(--text-tertiary);
 }
 
 .fit-score-value {
-    font-weight: 700;
-    font-size: var(--text-sm);
+  font-weight: 700;
+  font-size: var(--text-sm);
 }
 
 .fit-score-bar {
-    height: 4px;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-full);
-    overflow: hidden;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
 }
 
 .fit-score-fill {
-    height: 100%;
-    border-radius: var(--radius-full);
-    transition: width var(--transition-base);
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-base);
 }
 
 /* Card Notes */
 .card-notes {
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--border-primary);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-primary);
 }
 
 .card-notes p {
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-    margin: 0;
-    line-height: 1.5;
-} */
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.5;
+}
 
+*/
 /* ========================================
    APPLICATION CARD – REFINED & RESILIENT
    ======================================== */
@@ -174,7 +175,8 @@
   animation: fadeIn var(--transition-base);
   display: flex;
   flex-direction: column;
-  min-height: 220px; /* Đảm bảo chiều cao tối thiểu ổn định */
+  min-height: 220px;
+  /* Đảm bảo chiều cao tối thiểu ổn định */
   position: relative;
 }
 
@@ -188,6 +190,31 @@
   opacity: 0.6;
   transform: rotate(1.5deg) translateY(-1px);
   z-index: 10;
+}
+
+.application-card.interview-soon {
+  border-color: #f59e0b;
+  /* Amber 500 */
+  background: linear-gradient(to bottom right, var(--bg-elevated), rgba(245, 158, 11, 0.05));
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+  animation: pulse-amber 2s infinite ease-in-out;
+}
+
+@keyframes pulse-amber {
+  0% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.1);
+  }
+
+  50% {
+    border-color: rgba(245, 158, 11, 1);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+  }
+
+  100% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.1);
+  }
 }
 
 /* === Card Header === */
@@ -246,7 +273,8 @@
   flex-shrink: 0;
   display: flex;
   align-items: flex-start;
-  margin-top: -4px; /* Căn chỉnh icon priority */
+  margin-top: -4px;
+  /* Căn chỉnh icon priority */
 }
 
 /* === Card Meta === */
@@ -277,7 +305,8 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   margin-bottom: var(--space-3);
-  min-height: 24px; /* Giữ khoảng trống dù không có tag */
+  min-height: 24px;
+  /* Giữ khoảng trống dù không có tag */
 }
 
 .tag {
@@ -288,7 +317,8 @@
 
 /* === Fit Score Section === */
 .card-footer {
-  margin-top: auto; /* Đẩy phần fit score xuống dưới cùng */
+  margin-top: auto;
+  /* Đẩy phần fit score xuống dưới cùng */
   padding-top: var(--space-3);
   border-top: 1px solid var(--border-primary);
 }
@@ -367,4 +397,186 @@
   .priority-indicator {
     font-size: var(--text-lg);
   }
+}
+
+/* === Actions === */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-delete {
+  opacity: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: -4px;
+}
+
+.application-card:hover .btn-delete {
+  opacity: 1;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--error-DEFAULT);
+}
+
+/* === QUICK VIEW PANEL === */
+.quick-view-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* Let clicks pass through unless on panel */
+  z-index: 100;
+}
+
+.quick-view-panel {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 16px);
+  width: 440px;
+  background: var(--bg-elevated);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-xl);
+  border-radius: 16px;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-12px) scale(0.96);
+  transition: all 0.25s cubic-bezier(0.2, 0.6, 0.2, 1);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Intelligent Positioning */
+.application-card:hover .quick-view-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0) scale(1);
+  transition-delay: 0.15s;
+}
+
+/* Panel Content Layout */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid var(--border-primary);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.panel-header h5 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.panel-date {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-section {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.9;
+}
+
+/* Tags Styling for Requirement List */
+.panel-tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.panel-tag-chip {
+  font-size: 0.85rem;
+  padding: 4px 10px;
+  background: var(--bg-surface);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-primary);
+}
+
+.panel-tag-chip.missing {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  order: -1;
+}
+
+.panel-text-block {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  background: var(--bg-secondary);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary-500);
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cv-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  color: var(--success);
+  font-size: 0.9rem;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  display: inline-block;
+}
+
+/* Handle right-edge overflow (CSS logic for Kanban columns) */
+/* This is a simple heuristic; ideally handled by JS/popper.js */
+[data-column-index="2"] .quick-view-panel,
+[data-column-index="3"] .quick-view-panel,
+[data-column-index="4"] .quick-view-panel {
+  left: auto;
+  right: calc(100% + 12px);
+  transform: translateX(10px) scale(0.98);
+}
+
+[data-column-index="2"] .application-card:hover .quick-view-panel,
+[data-column-index="3"] .application-card:hover .quick-view-panel,
+[data-column-index="4"] .application-card:hover .quick-view-panel {
+  transform: translateX(0) scale(1);
 }

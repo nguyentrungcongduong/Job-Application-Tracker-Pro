@@ -28,5 +28,6 @@ public class InterviewDTO {
     private Integer confidenceScore;
     private Integer fitScore;
     private Boolean wantContinue;
+    private Boolean reminderSent;
     private String notes;
 }

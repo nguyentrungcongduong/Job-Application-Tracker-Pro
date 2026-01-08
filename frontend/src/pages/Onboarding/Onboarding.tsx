@@ -1,18 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore, useApplicationStore } from '../../store';
-import { 
-  Sparkles, 
-  Target, 
-  FileUp, 
-  PlusCircle, 
-  CheckCircle2, 
-  ChevronRight, 
+import {
+  Target,
+  FileUp,
+  PlusCircle,
+  CheckCircle2,
+  ChevronRight,
   ChevronLeft,
   ArrowRight,
-  Briefcase,
   FileCheck
 } from 'lucide-react';
+import Logo from '../../components/Layout/Logo';
 import './Onboarding.css';
 
 const STEPS = [
@@ -26,12 +25,12 @@ const Onboarding = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user, completeOnboarding } = useAuthStore();
   const { addApplication } = useApplicationStore();
-  
+
   const [currentStep, setCurrentStep] = useState(0);
   const [role, setRole] = useState('');
   const [industry, setIndustry] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
-  
+
   // First App state
   const [company, setCompany] = useState('');
   const [position, setPosition] = useState('');
@@ -48,8 +47,6 @@ const Onboarding = () => {
     // 1. Create first application if data provided
     if (company && position) {
       addApplication({
-        id: crypto.randomUUID(),
-        userId: user.id,
         companyName: company,
         position: position,
         status: 'APPLIED',
@@ -57,14 +54,12 @@ const Onboarding = () => {
         source: 'OTHER',
         priority: 'MEDIUM',
         tags: [industry || 'Job Search'],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       });
     }
 
     // 2. Mark user as onboarded (API call + Store update)
     await completeOnboarding();
-    
+
     // 3. To "Aha Moment" (Dashboard)
     navigate('/dashboard');
   };
@@ -78,7 +73,7 @@ const Onboarding = () => {
         {/* Header with Progress */}
         <div className="onboarding-header">
           <div className="logo small">
-            <Sparkles size={24} />
+            <Logo size={52} />
             <h1 className="gradient-text">Onboarding</h1>
           </div>
           <div className="progress-stepper">
@@ -104,17 +99,17 @@ const Onboarding = () => {
               <p>Tailor your dashboard to your career path.</p>
               <div className="form-group mt-6">
                 <label>Job Title / Role</label>
-                <input 
-                  className="input" 
-                  placeholder="e.g. Senior Software Engineer" 
+                <input
+                  className="input"
+                  placeholder="e.g. Senior Software Engineer"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                 />
               </div>
               <div className="form-group mt-4">
                 <label>Industry</label>
-                <select 
-                  className="input" 
+                <select
+                  className="input"
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                 >
@@ -132,20 +127,20 @@ const Onboarding = () => {
             <div className="animate-slide-in">
               <h2>Upload Your Resume</h2>
               <p>We'll use this to analyze your fit score (Optional MVP).</p>
-              
-              <div 
+
+              <div
                 className={`upload-zone ${resumeFile ? 'file-selected' : ''}`}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
                   accept=".pdf,.docx"
                   className="hidden-input"
                   style={{ display: 'none' }}
                 />
-                
+
                 {resumeFile ? (
                   <div className="selected-file-ui text-center animate-scale-up">
                     <div className="file-icon-wrapper mb-2">
@@ -153,7 +148,7 @@ const Onboarding = () => {
                     </div>
                     <p className="font-bold text-lg text-primary">{resumeFile.name}</p>
                     <p className="text-secondary text-sm">{(resumeFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                    <button 
+                    <button
                       className="btn btn-ghost btn-sm mt-4"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -183,18 +178,18 @@ const Onboarding = () => {
               <div className="first-app-form card mt-4 border-dashed">
                 <div className="form-group">
                   <label>Company</label>
-                  <input 
-                    className="input" 
-                    placeholder="e.g. Google, Apple" 
+                  <input
+                    className="input"
+                    placeholder="e.g. Google, Apple"
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                   />
                 </div>
                 <div className="form-group mt-3">
                   <label>Position</label>
-                  <input 
-                    className="input" 
-                    placeholder="Software Engineer" 
+                  <input
+                    className="input"
+                    placeholder="Software Engineer"
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
                   />
@@ -210,15 +205,15 @@ const Onboarding = () => {
 
         {/* Footer Actions */}
         <div className="onboarding-footer">
-          <button 
-            className="btn btn-ghost" 
+          <button
+            className="btn btn-ghost"
             onClick={prevStep}
             disabled={currentStep === 0}
           >
             <ChevronLeft size={18} />
             Back
           </button>
-          
+
           {currentStep === STEPS.length - 1 ? (
             <button className="btn btn-primary" onClick={handleComplete}>
               Go to Dashboard

@@ -40,6 +40,7 @@ export interface User {
   createdAt: string;
   onboarded: boolean;
   avatar?: string;
+  emailNotificationsEnabled?: boolean;
 }
 
 export interface JobApplication {
@@ -63,6 +64,8 @@ export interface JobApplication {
   firstResponseDate?: string;
   createdAt: string;
   updatedAt: string;
+  missingSkills?: string[];
+  interviewReminder?: string;
 }
 
 export interface Interview {
@@ -105,6 +108,52 @@ export interface FitScoreAnalysis {
   recommendations: string[];
 }
 
+export type ParsingStatus = 'UPLOADED' | 'ANALYZING' | 'READY' | 'NEEDS_REVIEW' | 'FAILED';
+
+export interface Resume {
+  id: string;
+  userId: string;
+  fileName: string;
+  originalFileName: string;
+  fileUrl: string;
+  versionName?: string;
+  parsingStatus: ParsingStatus;
+  parsedContent?: string;
+  extractedSkills?: string;
+  qualityScore?: number;
+  atsCompatibility?: 'LOW' | 'MEDIUM' | 'HIGH';
+  recommendations?: string;
+  experienceCount?: number;
+  isPrimary: boolean;
+  usageCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ResumePerformance {
+  totalApplications: number;
+  interviews: number;
+  offers: number;
+  successRate: number;
+}
+
+export interface ResumeEvent {
+  type: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface CVMatchResult {
+  resumeId: string;
+  resumeName: string;
+  matchScore: number;
+  matchingSkills: string[];
+  missingSkills: string[];
+  experienceScore: number;
+  skillScore: number;
+  keywordScore: number;
+}
+
 // ========================================
 // ANALYTICS & DASHBOARD
 // ========================================
@@ -142,6 +191,20 @@ export interface TimelineEvent {
 }
 
 // ========================================
+// NOTIFICATIONS
+// ========================================
+
+export interface Notification {
+  id: string;
+  type: 'INTERVIEW_REMINDER' | 'FOLLOW_UP' | 'STATUS_UPDATE';
+  title: string;
+  content: string;
+  channel: string;
+  isRead: boolean;
+  sentAt: string;
+}
+
+// ========================================
 // API TYPES
 // ========================================
 
@@ -173,9 +236,11 @@ export interface RegisterRequest {
 
 export interface AuthResponse {
   token: string;
+  id: string;
   name: string;
   email: string;
   onboarded: boolean;
+  emailNotificationsEnabled: boolean;
 }
 
 // ========================================
@@ -196,6 +261,7 @@ export interface ApplicationFormData {
   cvVersion?: string;
   recruiterContact?: string;
   notes?: string;
+  interviewReminder?: string;
 }
 
 export interface InterviewFormData {

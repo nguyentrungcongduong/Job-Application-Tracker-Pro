@@ -43,13 +43,8 @@
 }
 
 .page-title {
-    font-size: var(--text-4xl);
     font-weight: 800;
     margin: 0;
-    background: linear-gradient(135deg, var(--primary-400), var(--accent-400));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .page-subtitle {

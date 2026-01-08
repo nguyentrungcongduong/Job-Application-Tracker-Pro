@@ -5,7 +5,7 @@ import com.jobtracker.backend.entity.Interview;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "default")
 public interface InterviewMapper {
 
     @Mapping(target = "applicationId", source = "application.id")

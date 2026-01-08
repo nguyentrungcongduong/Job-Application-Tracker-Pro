@@ -1,0 +1,88 @@
+.follow-up-modal {
+    max-width: 600px;
+    width: 90%;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    /* Yellowish border for "Suggestion" */
+}
+
+.modal-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-tertiary);
+    margin: 0;
+}
+
+.modal-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.template-info {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.draft-editor {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    /* Or generic sans-serif for email */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.draft-editor:focus {
+    border-color: var(--primary);
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn-success {
+    background-color: var(--success);
+    color: white;
+}
+
+.gmail-link {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 16px;
+    margin-top: 8px;
+}
+
+.gmail-link .btn-link {
+    color: var(--text-tertiary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+}
+
+.gmail-link .btn-link:hover {
+    color: var(--text-primary);
+}

@@ -55,9 +55,11 @@ public class AuthService {
                 // In a real flow, we might not return a token here if it's mandatory to verify
                 // But for now, let's return a partial response or null token
                 return AuthResponse.builder()
+                                .id(user.getId().toString())
                                 .name(user.getName())
                                 .email(user.getEmail())
                                 .onboarded(user.isOnboarded())
+                                .emailNotificationsEnabled(user.isEmailNotificationsEnabled())
                                 .build();
         }
 
@@ -97,9 +99,11 @@ public class AuthService {
                 var jwtToken = jwtService.generateToken(userDetails);
                 return AuthResponse.builder()
                                 .token(jwtToken)
+                                .id(user.getId().toString())
                                 .name(user.getName())
                                 .email(user.getEmail())
                                 .onboarded(user.isOnboarded())
+                                .emailNotificationsEnabled(user.isEmailNotificationsEnabled())
                                 .build();
         }
 }

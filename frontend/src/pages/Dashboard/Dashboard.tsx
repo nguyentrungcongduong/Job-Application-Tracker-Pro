@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
-import { 
-  Briefcase, 
-  TrendingUp, 
-  Calendar, 
+import { useState, useMemo, useEffect } from 'react';
+import {
+  Briefcase,
+  TrendingUp,
+  Calendar,
   Award,
   ArrowUp,
   ArrowDown,
@@ -14,15 +14,16 @@ import {
   ExternalLink,
   ChevronRight,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  LayoutDashboard
 } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -38,8 +39,13 @@ import type { ApplicationStatus, JobApplication } from '../../types';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { applications, interviews } = useApplicationStore();
+  const { applications, interviews, fetchApplications, fetchAllInterviews } = useApplicationStore();
   const [selectedStage, setSelectedStage] = useState<ApplicationStatus | null>(null);
+
+  useEffect(() => {
+    fetchApplications();
+    fetchAllInterviews();
+  }, []);
 
   // ========================================
   // CORE DYNAMIC STATS
@@ -50,7 +56,7 @@ const Dashboard = () => {
       'CV_IN_PROGRESS', 'APPLIED', 'HR_SCREEN', 'INTERVIEW_1', 'INTERVIEW_2', 'FINAL_INTERVIEW', 'OFFER_RECEIVED'
     ];
     const activeApps = applications.filter(app => activeStatuses.includes(app.status));
-    
+
     // 2. Interviews Scheduled (using actual Interviews entity)
     const now = new Date();
     const futureInterviews = interviews.filter(int => new Date(int.interviewDate) > now);
@@ -106,7 +112,7 @@ const Dashboard = () => {
 
     const nextInt = sortedUpcoming[0];
     const app = applications.find(a => a.id === nextInt.applicationId);
-    
+
     if (!app) return null;
 
     const date = new Date(nextInt.interviewDate);
@@ -150,23 +156,23 @@ const Dashboard = () => {
   const velocityData = useMemo(() => {
     const now = new Date();
     const data = [];
-    
+
     for (let i = 28; i >= 0; i -= 7) {
       const weekStart = new Date(now);
       weekStart.setDate(weekStart.getDate() - i - 7);
       const weekEnd = new Date(now);
       weekEnd.setDate(weekEnd.getDate() - i);
-      
+
       const weekApps = applications.filter(app => {
         const d = new Date(app.appliedDate);
         return d >= weekStart && d <= weekEnd;
       });
-      
+
       const weekInterviews = interviews.filter(int => {
         const d = new Date(int.interviewDate);
         return d >= weekStart && d <= weekEnd;
       });
-      
+
       data.push({
         week: `W${4 - Math.floor(i / 7)}`,
         applied: weekApps.length,
@@ -189,7 +195,7 @@ const Dashboard = () => {
     const sourceStats = sources.map(source => {
       const sourceApps = applications.filter(app => app.source === source);
       const totalCount = sourceApps.length;
-      const responses = sourceApps.filter(app => 
+      const responses = sourceApps.filter(app =>
         ['HR_SCREEN', 'INTERVIEW_1', 'INTERVIEW_2', 'FINAL_INTERVIEW', 'OFFER_RECEIVED', 'OFFER_ACCEPTED'].includes(app.status)
       ).length;
       const rate = totalCount > 0 ? (responses / totalCount) * 100 : 0;
@@ -198,7 +204,7 @@ const Dashboard = () => {
 
     const best = sourceStats.sort((a, b) => b.rate - a.rate)[0];
     if (!best || best.count === 0) return null;
-    
+
     const label = SOURCE_CONFIG[best.source]?.label || best.source;
     return `${label} is your top source with a ${best.rate.toFixed(0)}% response rate.`;
   }, [applications]);
@@ -241,8 +247,15 @@ const Dashboard = () => {
   return (
     <div className="dashboard-page content-section">
       <div className="page-header">
-        <h1 className="page-title">Dashboard</h1>
-        <p className="page-subtitle">Personal job application analytics and insights</p>
+        <div className="header-title-section">
+          <div className="header-icon-wrapper">
+            <LayoutDashboard size={28} />
+          </div>
+          <div>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="page-subtitle">Personal job application analytics and insights</p>
+          </div>
+        </div>
       </div>
 
       {/* Row 1: Primary Stats */}
@@ -309,109 +322,11 @@ const Dashboard = () => {
 
       <div className="dashboard-main-grid">
         <div className="dashboard-column">
-          {/* Next Interview Smart Card */}
-          {nextInterviewData ? (
-             <div className="next-interview-card card">
-                <div className="card-header-fancy">
-                  <div className="header-status">
-                    <Calendar size={14} /> <span>UPCOMING INTERVIEW</span>
-                  </div>
-                  <div className={`countdown-badge ${nextInterviewData.countdownColor}`}>
-                    {nextInterviewData.countdownText}
-                  </div>
-                </div>
-
-                <div className="interview-main-info">
-                  <div className="interview-company-info">
-                    <h3>{nextInterviewData.position}</h3>
-                    <p className="company-name">{nextInterviewData.company}</p>
-                  </div>
-                  <div className="readiness-meter">
-                    <div className="meter-label">Fit Score: {nextInterviewData.readinessScore}%</div>
-                    <div className="meter-bar">
-                      <div className="meter-fill" style={{ width: `${nextInterviewData.readinessScore}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="interview-details-grid">
-                  <div className="detail-item">
-                    <span className="label">Round</span>
-                    <span className="value">{nextInterviewData.round} - Technical</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="label">Medium</span>
-                    <span className="value">{nextInterviewData.type === 'ONLINE' ? <Video size={14} style={{display:'inline', verticalAlign:'middle'}} /> : <MapPin size={14} style={{display:'inline', verticalAlign:'middle'}} />} {nextInterviewData.type}</span>
-                  </div>
-                  <div className="detail-item">
-                    <span className="label">Interviewer</span>
-                    <span className="value">{nextInterviewData.interviewer}</span>
-                  </div>
-                </div>
-
-                <div className="interview-actions">
-                  <button className="btn btn-primary btn-sm"><CheckCircle2 size={16} /> Prep Notes</button>
-                  <button className="btn btn-outline btn-sm">Practice</button>
-                  <button className="btn btn-ghost btn-sm"><ExternalLink size={16} /> Call Link</button>
-                </div>
-             </div>
-          ) : (
-            <div className="no-interview-card card">
-               <h3>No upcoming interviews</h3>
-               <button className="btn btn-outline btn-sm mt-3">Browse Jobs</button>
-            </div>
-          )}
-
-          {/* Velocity Chart */}
-          <div className="chart-card card">
-             <div className="chart-header">
-                <div>
-                  <h3 className="chart-title">Activity Momentum</h3>
-                  <p className="chart-subtitle">Applications & Interviews (Last 30 days)</p>
-                </div>
-                <div className="chart-legend-custom">
-                  <div className="legend-item"><span className="dot applied"></span> Applied</div>
-                  <div className="legend-item"><span className="dot interview"></span> Interviews</div>
-                </div>
-             </div>
-             <div className="chart-container">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={velocityData}>
-                    <defs>
-                      <linearGradient id="colorApplied" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorInterviews" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--accent-500)" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="var(--accent-500)" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-primary)" />
-                    <XAxis dataKey="week" stroke="var(--text-tertiary)" tick={{ fontSize: 10 }} />
-                    <YAxis stroke="var(--text-tertiary)" tick={{ fontSize: 10 }} />
-                    <Tooltip contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)', borderRadius: '8px', color: 'var(--text-primary)' }} itemStyle={{ color: 'var(--text-primary)' }} />
-                    <Area type="monotone" dataKey="applied" stroke="var(--primary-500)" strokeWidth={2} fill="url(#colorApplied)" />
-                    <Area type="monotone" dataKey="interviews" stroke="var(--accent-500)" strokeWidth={2} fill="url(#colorInterviews)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-             </div>
-          </div>
-        </div>
-
-        <div className="dashboard-column">
-           {topSourceInsight && (
-            <div className="insight-banner card">
-              <div className="insight-icon">💡</div>
-              <div className="insight-text">
-                <strong>Insight:</strong> {topSourceInsight}
-              </div>
-            </div>
-          )}
-
+          {/* Pipeline Funnel */}
           <div className="chart-card card clickable-chart">
             <div className="chart-header">
               <h3 className="chart-title">Pipeline Funnel</h3>
+              <p className="chart-subtitle">Distribution of applications across stages</p>
             </div>
             <div className="chart-container">
               <ResponsiveContainer width="100%" height="100%">
@@ -427,6 +342,101 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
           </div>
+
+          {/* Velocity Chart */}
+          <div className="chart-card card">
+            <div className="chart-header">
+              <div>
+                <h3 className="chart-title">Activity Momentum</h3>
+                <p className="chart-subtitle">Applications & Interviews (Last 30 days)</p>
+              </div>
+              <div className="chart-legend-custom">
+                <div className="legend-item"><span className="dot applied"></span> Applied</div>
+                <div className="legend-item"><span className="dot interview"></span> Interviews</div>
+              </div>
+            </div>
+            <div className="chart-container">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={velocityData}>
+                  <defs>
+                    <linearGradient id="colorApplied" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--primary-500)" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="var(--primary-500)" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorInterviews" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="var(--accent-500)" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="var(--accent-500)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-primary)" />
+                  <XAxis dataKey="week" stroke="var(--text-tertiary)" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="var(--text-tertiary)" tick={{ fontSize: 10 }} />
+                  <Tooltip contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-primary)', borderRadius: '8px', color: 'var(--text-primary)' }} itemStyle={{ color: 'var(--text-primary)' }} />
+                  <Area type="monotone" dataKey="applied" stroke="var(--primary-500)" strokeWidth={2} fill="url(#colorApplied)" />
+                  <Area type="monotone" dataKey="interviews" stroke="var(--accent-500)" strokeWidth={2} fill="url(#colorInterviews)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-column">
+          {/* Next Interview Smart Card */}
+          {nextInterviewData && (
+            <div className="next-interview-card card">
+              <div className="card-header-fancy">
+                <div className="header-status">
+                  <Calendar size={14} /> <span>UPCOMING INTERVIEW</span>
+                </div>
+                <div className={`countdown-badge ${nextInterviewData.countdownColor}`}>
+                  {nextInterviewData.countdownText}
+                </div>
+              </div>
+
+              <div className="interview-main-info">
+                <div className="interview-company-info">
+                  <h3>{nextInterviewData.position}</h3>
+                  <p className="company-name">{nextInterviewData.company}</p>
+                </div>
+                <div className="readiness-meter">
+                  <div className="meter-label">Fit Score: {nextInterviewData.readinessScore}%</div>
+                  <div className="meter-bar">
+                    <div className="meter-fill" style={{ width: `${nextInterviewData.readinessScore}%` }}></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="interview-details-grid">
+                <div className="detail-item">
+                  <span className="label">Round</span>
+                  <span className="value">{nextInterviewData.round} - Technical</span>
+                </div>
+                <div className="detail-item">
+                  <span className="label">Medium</span>
+                  <span className="value">{nextInterviewData.type === 'ONLINE' ? <Video size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> : <MapPin size={14} style={{ display: 'inline', verticalAlign: 'middle' }} />} {nextInterviewData.type}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="label">Interviewer</span>
+                  <span className="value">{nextInterviewData.interviewer}</span>
+                </div>
+              </div>
+
+              <div className="interview-actions">
+                <button className="btn btn-primary btn-sm"><CheckCircle2 size={16} /> Prep Notes</button>
+                <button className="btn btn-outline btn-sm">Practice</button>
+                <button className="btn btn-ghost btn-sm"><ExternalLink size={16} /> Call Link</button>
+              </div>
+            </div>
+          )}
+
+          {topSourceInsight && (
+            <div className="insight-banner card">
+              <div className="insight-icon">💡</div>
+              <div className="insight-text">
+                <strong>Insight:</strong> {topSourceInsight}
+              </div>
+            </div>
+          )}
 
           <div className="chart-card card">
             <div className="chart-header">
@@ -473,8 +483,8 @@ const Dashboard = () => {
         <div className="drill-down-overlay" onClick={() => setSelectedStage(null)}>
           <div className="drill-down-sidebar" onClick={e => e.stopPropagation()}>
             <div className="drill-down-header">
-               <h2>{STATUS_CONFIG[selectedStage].label}</h2>
-               <button className="close-btn" onClick={() => setSelectedStage(null)}><X size={20} /></button>
+              <h2>{STATUS_CONFIG[selectedStage].label}</h2>
+              <button className="close-btn" onClick={() => setSelectedStage(null)}><X size={20} /></button>
             </div>
             <div className="drill-down-content">
               {drillDownApps.map(app => (

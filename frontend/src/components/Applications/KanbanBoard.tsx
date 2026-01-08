@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApplicationStore } from '../../store';
 import { KANBAN_COLUMNS, STATUS_CONFIG } from '../../constants';
 import type { ApplicationStatus, JobApplication } from '../../types';
@@ -12,6 +12,27 @@ interface KanbanBoardProps {
 const KanbanBoard = ({ searchQuery: _searchQuery }: KanbanBoardProps) => {
   const { filters: _filters, getFilteredApplications, updateApplication } = useApplicationStore();
   const [draggedItem, setDraggedItem] = useState<JobApplication | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.deltaX !== 0) return;
+    
+    // Check if we are over a vertically scrollable element
+    const path = e.nativeEvent.composedPath() as HTMLElement[];
+    for (const el of path) {
+      if (el === scrollRef.current) break;
+      if (el.scrollHeight > el.clientHeight) {
+        const style = window.getComputedStyle(el);
+        if (style.overflowY === 'auto' || style.overflowY === 'scroll') {
+          return; // Let vertical scroll happen
+        }
+      }
+    }
+
+    if (scrollRef.current) {
+        scrollRef.current.scrollLeft += e.deltaY;
+    }
+  };
 
   // Use the centralized filtering logic from the store
   const filteredApplications = getFilteredApplications();
@@ -37,7 +58,11 @@ const KanbanBoard = ({ searchQuery: _searchQuery }: KanbanBoardProps) => {
   };
 
   return (
-    <div className="kanban-board">
+    <div 
+      className="kanban-board" 
+      ref={scrollRef}
+      onWheel={handleWheel}
+    >
       {KANBAN_COLUMNS.map((status) => {
         const apps = getApplicationsByStatus(status);
         const config = STATUS_CONFIG[status];
@@ -46,6 +71,7 @@ const KanbanBoard = ({ searchQuery: _searchQuery }: KanbanBoardProps) => {
           <div
             key={status}
             className="kanban-column"
+            data-column-index={KANBAN_COLUMNS.indexOf(status)}
             onDragOver={handleDragOver}
             onDrop={() => handleDrop(status)}
           >

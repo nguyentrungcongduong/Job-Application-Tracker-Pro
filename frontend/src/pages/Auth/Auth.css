@@ -89,16 +89,13 @@
 }
 
 .auth-header .logo-icon {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
-    border-radius: var(--radius-xl);
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     margin-bottom: var(--space-4);
-    box-shadow: var(--shadow-glow);
 }
 
 .auth-header h2 {

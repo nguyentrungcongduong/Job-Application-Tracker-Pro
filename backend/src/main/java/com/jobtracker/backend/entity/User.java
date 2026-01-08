@@ -45,6 +45,21 @@ public class User {
     @Builder.Default
     private boolean enabled = false;
 
+    @Builder.Default
+    private boolean emailNotificationsEnabled = false;
+
+    @Builder.Default
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
+    private boolean followUpEnabled = true;
+
+    @Builder.Default
+    @Column(columnDefinition = "INTEGER DEFAULT 3")
+    private Integer followUpApplyingDays = 3;
+
+    @Builder.Default
+    @Column(columnDefinition = "INTEGER DEFAULT 2")
+    private Integer followUpInterviewDays = 2;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

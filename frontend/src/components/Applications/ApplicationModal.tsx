@@ -1,8 +1,10 @@
-import { X, Send, Link as LinkIcon, Building2, UserCircle, Briefcase, DollarSign, MapPin, Tag, FileText } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { X, Send, Link as LinkIcon, Building2, UserCircle, Briefcase, DollarSign, MapPin, Tag, FileText, AlertTriangle, Loader2, Sparkles, Bell } from 'lucide-react';
+import { useForm, useWatch } from 'react-hook-form';
 import { useApplicationStore } from '../../store';
-import { STATUS_CONFIG, SOURCE_CONFIG, PRIORITY_CONFIG } from '../../constants';
-import type { JobApplication } from '../../types';
+import { STATUS_CONFIG, SOURCE_CONFIG, PRIORITY_CONFIG, API_ENDPOINTS } from '../../constants';
+import { useMemo, useState, useEffect } from 'react';
+import axiosInstance from '../../api/axios';
+import type { JobApplication, Resume, CVMatchResult } from '../../types';
 import './ApplicationModal.css';
 
 interface ApplicationModalProps {
@@ -12,9 +14,9 @@ interface ApplicationModalProps {
 type ApplicationFormValues = Omit<JobApplication, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'fitScore'>;
 
 const ApplicationModal = ({ onClose }: ApplicationModalProps) => {
-  const { addApplication } = useApplicationStore();
+  const { addApplication, applications } = useApplicationStore();
   
-  const { register, handleSubmit, formState: { errors } } = useForm<ApplicationFormValues>({
+  const { register, control, handleSubmit, setValue, watch, formState: { errors } } = useForm<ApplicationFormValues>({
     defaultValues: {
       status: 'APPLIED',
       source: 'LINKEDIN',
@@ -23,20 +25,84 @@ const ApplicationModal = ({ onClose }: ApplicationModalProps) => {
       tags: []
     }
   });
+  
+  const [resumes, setResumes] = useState<Resume[]>([]);
+  const [matchResults, setMatchResults] = useState<CVMatchResult[]>([]);
+  const [showMatchResults, setShowMatchResults] = useState(false);
+  const [isMatching, setIsMatching] = useState(false);
+  const selectedCV = watch('cvVersion');
 
-  const onSubmit = (data: ApplicationFormValues) => {
-    const newApplication: JobApplication = {
+  useEffect(() => {
+    const fetchResumes = async () => {
+      try {
+        const { data } = await axiosInstance.get<Resume[]>(API_ENDPOINTS.RESUMES);
+        setResumes(data);
+      } catch (error) {
+        console.error('Failed to fetch resumes', error);
+      }
+    };
+    fetchResumes();
+  }, []);
+
+  const handleMatchCVs = async () => {
+    const jdText = watch('jdText');
+    if (!jdText) return;
+
+    setIsMatching(true);
+    try {
+        const { data } = await axiosInstance.post<CVMatchResult[]>(API_ENDPOINTS.RESUME_MATCH, { jobDescription: jdText });
+        setMatchResults(Array.isArray(data) ? data : []);
+        setShowMatchResults(true);
+        // Automatically select the best match if available
+        if (data.length > 0) {
+            setValue('cvVersion', data[0].resumeName);
+        }
+    } catch (error) {
+        console.error('Matching failed', error);
+        alert('Failed to analyze CVs');
+    } finally {
+        setIsMatching(false);
+    }
+  };
+
+
+  const companyName = useWatch({ control, name: 'companyName' });
+  const position = useWatch({ control, name: 'position' });
+  const jdText = useWatch({ control, name: 'jdText' });
+
+  const duplicateWarning = useMemo(() => {
+    if (!companyName || !position) return null;
+    
+    const duplicate = applications.find(app => 
+      app.companyName.toLowerCase() === companyName.toLowerCase() && 
+      app.position.toLowerCase() === position.toLowerCase()
+    );
+
+    if (duplicate) {
+      // Format the date nicely
+      const date = new Date(duplicate.appliedDate).toLocaleDateString('vi-VN');
+      return `Bạn đã apply vị trí này rồi vào ngày ${date}`;
+    }
+    return null;
+  }, [companyName, position, applications]);
+
+  const onSubmit = async (data: ApplicationFormValues) => {
+    // Check if we have match results for the selected CV
+    const selectedMatchResult = matchResults.find(r => r.resumeName === data.cvVersion);
+
+    const applicationRequest = {
       ...data,
-      id: `app-${Date.now()}`,
-      userId: 'user-1', // Mock user
-      fitScore: Math.floor(Math.random() * 40) + 60, // Mock fit score
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      fitScore: selectedMatchResult ? selectedMatchResult.matchScore : (Math.floor(Math.random() * 40) + 60),
+      missingSkills: selectedMatchResult ? selectedMatchResult.missingSkills : [],
       tags: typeof data.tags === 'string' ? (data.tags as string).split(',').map(t => t.trim()) : data.tags
     };
     
-    addApplication(newApplication);
-    onClose();
+    try {
+      await addApplication(applicationRequest as any);
+      onClose();
+    } catch (error) {
+      alert('Failed to save application');
+    }
   };
 
   return (
@@ -58,6 +124,24 @@ const ApplicationModal = ({ onClose }: ApplicationModalProps) => {
           <div className="form-grid">
             {/* Company & Position */}
             <div className="form-section full-width">
+              {duplicateWarning && (
+                <div className="warning-banner" style={{ 
+                  backgroundColor: 'rgba(255, 171, 0, 0.1)', 
+                  border: '1px solid rgba(255, 171, 0, 0.3)',
+                  color: '#ffab00',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  fontSize: '0.9rem'
+                }}>
+                  <AlertTriangle size={18} />
+                  <span>{duplicateWarning}</span>
+                </div>
+              )}
+              
               <div className="form-group">
                 <label><Building2 size={16} /> Company Name *</label>
                 <input 
@@ -130,6 +214,14 @@ const ApplicationModal = ({ onClose }: ApplicationModalProps) => {
               />
             </div>
 
+            <div className="form-group">
+              <label><Bell size={16} /> Interview Reminder</label>
+              <input 
+                type="datetime-local" 
+                {...register('interviewReminder')} 
+              />
+            </div>
+
             {/* Tags & CV */}
             <div className="form-group">
               <label><Tag size={16} /> Tags (comma separated)</label>
@@ -139,12 +231,83 @@ const ApplicationModal = ({ onClose }: ApplicationModalProps) => {
               />
             </div>
 
-            <div className="form-group">
-              <label><FileText size={16} /> CV Version Used</label>
-              <input 
-                {...register('cvVersion')} 
-                placeholder="e.g. CV_v3_Standard.pdf"
+            {/* JD Text & Smart Match */}
+            <div className="form-group full-width">
+              <label><FileText size={16} /> Job Description Text (for Smart Match)</label>
+              <textarea 
+                {...register('jdText')} 
+                placeholder="Paste the Job Description here to find the best CV match..."
+                rows={4}
+                className="input-textarea"
               />
+            </div>
+
+            <div className="form-group full-width">
+              <label><FileText size={16} /> CV Version Used</label>
+              
+              {!showMatchResults ? (
+                <div className="cv-selection-simple">
+                  <select {...register('cvVersion')} className="input">
+                    <option value="">Select a CV Version...</option>
+                    {resumes.map(resume => (
+                      <option key={resume.id} value={resume.versionName || resume.fileName}>
+                        {resume.versionName || resume.fileName} ({new Date(resume.createdAt).toLocaleDateString()})
+                      </option>
+                    ))}
+                  </select>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary btn-sm"
+                    onClick={handleMatchCVs}
+                    disabled={isMatching || !jdText}
+                  >
+                     {isMatching ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}
+                     Find Best Match
+                  </button>
+                </div>
+              ) : (
+                <div className="cv-match-results">
+                  <div className="match-header">
+                    <h4>Recommended CVs</h4>
+                    <button type="button" className="btn-link" onClick={() => setShowMatchResults(false)}>Show All</button>
+                  </div>
+                  <div className="match-list">
+                    {matchResults.map((result) => (
+                      <div 
+                        key={result.resumeId} 
+                        className={`match-item ${selectedCV === result.resumeName ? 'selected' : ''}`}
+                        onClick={() => setValue('cvVersion', result.resumeName)}
+                      >
+                        <div className="match-info">
+                          <div className="match-name-row">
+                             <input 
+                                type="radio" 
+                                name="cv_match" 
+                                checked={selectedCV === result.resumeName}
+                                onChange={() => setValue('cvVersion', result.resumeName)}
+                             />
+                             <span className="match-name">{result.resumeName}</span>
+                          </div>
+                          <div className="match-skills">
+                            {result.matchingSkills?.slice(0, 3).map(s => (
+                              <span key={s} className="skill-tag match">✅ {s}</span>
+                            ))}
+                            {result.missingSkills?.slice(0, 2).map(s => (
+                              <span key={s} className="skill-tag missing">❌ {s}</span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="match-score-wrapper">
+                          <span className="match-score-val">{result.matchScore}%</span>
+                          <div className="match-progress-bar">
+                            <div className="match-progress-fill" style={{ width: `${result.matchScore}%` }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Notes */}

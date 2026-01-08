@@ -20,4 +20,22 @@ public class UserController {
         userService.completeOnboarding(authentication.getName());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/settings/email-notifications")
+    public ResponseEntity<Void> updateEmailNotifications(Authentication authentication,
+            @org.springframework.web.bind.annotation.RequestBody Boolean enabled) {
+        userService.updateEmailNotifications(authentication.getName(), enabled);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/settings/notifications")
+    public ResponseEntity<Void> updateNotificationSettings(Authentication authentication,
+            @org.springframework.web.bind.annotation.RequestBody com.jobtracker.backend.dto.NotificationSettingsRequest request) {
+        userService.updateNotificationSettings(
+                authentication.getName(),
+                request.isEmailNotificationsEnabled(),
+                request.getFollowUpApplyingDays(),
+                request.getFollowUpInterviewDays());
+        return ResponseEntity.ok().build();
+    }
 }

@@ -2,6 +2,7 @@ package com.jobtracker.backend.entity;
 
 public enum ApplicationStatus {
     WISHLIST,
+    CV_IN_PROGRESS,
     APPLIED,
     HR_SCREEN,
     INTERVIEW_1,
@@ -9,7 +10,7 @@ public enum ApplicationStatus {
     TECHNICAL_TEST,
     FINAL_INTERVIEW,
     OFFER_RECEIVED,
-    ACCEPTED,
+    OFFER_ACCEPTED,
     REJECTED,
-    WITHDRAWN
+    WITHDRAWN;
 }

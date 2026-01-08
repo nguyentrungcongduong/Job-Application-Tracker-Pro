@@ -16,6 +16,11 @@ public class InterviewController {
 
     private final InterviewService service;
 
+    @GetMapping
+    public ResponseEntity<List<InterviewDTO>> getAll() {
+        return ResponseEntity.ok(service.getAllInterviews());
+    }
+
     @GetMapping("/application/{applicationId}")
     public ResponseEntity<List<InterviewDTO>> getByApplication(@PathVariable UUID applicationId) {
         return ResponseEntity.ok(service.getInterviewsByApplication(applicationId));

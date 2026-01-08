@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store';
-import { Sparkles, Mail, Lock, User, ArrowRight, Github, Linkedin, Chrome } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Github, Linkedin, Chrome } from 'lucide-react';
+import Logo from '../../components/Layout/Logo';
 import './Auth.css';
 
 const Auth = () => {
@@ -45,7 +46,7 @@ const Auth = () => {
         <div className="auth-header">
           <div className="logo">
             <div className="logo-icon">
-              <Sparkles size={32} />
+              <Logo size={80} />
             </div>
             <div className="logo-text">
               <h1 className="gradient-text">JobTracker</h1>
@@ -66,11 +67,11 @@ const Auth = () => {
               </div>
               <h3 className="text-xl font-bold mb-2">Check your email!</h3>
               <p className="text-secondary mb-4">
-                We've sent a verification link to <strong>{email}</strong>. 
+                We've sent a verification link to <strong>{email}</strong>.
                 Please verify your account to continue.
               </p>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="btn btn-secondary w-full"
                 onClick={() => {
                   setRegSuccess(false);

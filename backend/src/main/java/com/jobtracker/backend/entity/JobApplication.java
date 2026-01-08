@@ -57,6 +57,10 @@ public class JobApplication {
     @Column(name = "tag")
     private List<String> tags;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resume_id")
+    private Resume resume;
+
     private String cvVersion;
 
     private String recruiterContact;
@@ -65,6 +69,22 @@ public class JobApplication {
     private String notes;
 
     private Integer fitScore;
+
+    @ElementCollection
+    @CollectionTable(name = "application_missing_skills", joinColumns = @JoinColumn(name = "application_id"))
+    @Column(name = "skill")
+    private List<String> missingSkills;
+
+    @Column(columnDefinition = "TEXT")
+    private String jdText;
+
+    @Builder.Default
+    private boolean followUpSent = false;
+
+    private LocalDateTime interviewReminder;
+
+    @Builder.Default
+    private boolean reminderSent = false;
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Interview> interviews;

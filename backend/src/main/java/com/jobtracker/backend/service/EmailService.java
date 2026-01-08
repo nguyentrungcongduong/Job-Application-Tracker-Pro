@@ -3,64 +3,105 @@ package com.jobtracker.backend.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailService {
-    private final JavaMailSender mailSender;
 
-    @org.springframework.beans.factory.annotation.Value("${app.frontend-url:http://localhost:5174}")
-    private String frontendUrl;
+    private final JavaMailSender javaMailSender;
 
-    public void sendVerificationEmail(String to, String token) {
-        String url = frontendUrl + "/verify-email?token=" + token;
-        String subject = "Verify your account - Job Application Tracker Pro";
-        String content = "<div style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1e293b; background-color: #f8fafc;\">"
-                +
-                "<div style=\"background-color: #ffffff; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);\">"
-                +
-                "<div style=\"text-align: center; margin-bottom: 32px;\">" +
-                "<h1 style=\"margin: 0; color: #6366f1; font-size: 28px; font-weight: 800; letter-spacing: -0.025em;\">JobTracker<span style=\"color: #1e293b;\">Pro</span></h1>"
-                +
-                "<div style=\"height: 4px; width: 40px; background: #6366f1; margin: 12px auto; border-radius: 2px;\"></div>"
-                +
-                "</div>" +
-                "<h2 style=\"font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 16px; text-align: center;\">Confirm your email address</h2>"
-                +
-                "<p style=\"font-size: 16px; line-height: 24px; color: #475569; margin-bottom: 32px; text-align: center;\">"
-                +
-                "Welcome to the elite circle of job seekers! To start tracking your applications and unlock your personalized dashboard, please verify your email."
-                +
-                "</p>" +
-                "<div style=\"text-align: center; margin-bottom: 32px;\">" +
-                "<a href=\"" + url
-                + "\" style=\"display: inline-block; background-color: #6366f1; color: #ffffff; padding: 14px 32px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: background-color 0.2s;\">Verify Account Now</a>"
-                +
-                "</div>" +
-                "<p style=\"font-size: 14px; color: #94a3b8; text-align: center; margin-bottom: 0;\">" +
-                "This link will expire in 24 hours.<br>If you didn't create an account, you can safely ignore this email."
-                +
-                "</p>" +
-                "</div>" +
-                "<div style=\"text-align: center; margin-top: 24px;\">" +
-                "<p style=\"font-size: 12px; color: #94a3b8;\">" +
-                "&copy; 2026 Job Application Tracker Pro. All rights reserved." +
-                "</p>" +
-                "</div>" +
-                "</div>";
-
+    @Async
+    public void sendSimpleMessage(String to, String subject, String text) {
         try {
-            MimeMessage message = mailSender.createMimeMessage();
+            SimpleMailMessage message = new SimpleMailMessage();
+            // In prod, setFrom() is important.
+            // In dev with Gmail SMTP, it usually overrides with auth user.
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(text);
+            javaMailSender.send(message);
+            log.info("Email sent to {}", to);
+        } catch (Exception e) {
+            log.error("Failed to send email to {}", to, e);
+        }
+    }
+
+    @Async
+    public void sendHtmlMessage(String to, String subject, String htmlBody) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setText(content, true);
-            mailSender.send(message);
+            helper.setText(htmlBody, true);
+            javaMailSender.send(message);
+            log.info("HTML Email sent to {}", to);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email", e);
+            log.error("Failed to send HTML email to {}", to, e);
         }
+    }
+
+    @Async
+    public void sendNotificationEmail(String to, String title, String content) {
+        String htmlBody = "<div style=\"background-color:#ffffff; padding: 20px; font-family: sans-serif;\">" +
+                "  <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 500px; background-color: #f8f9fa; border-radius: 20px; border: 1px solid #e9ecef;\">"
+                +
+                "    <tr>" +
+                "      <td style=\"padding: 20px;\">" +
+                "        <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">" +
+                "          <tr>" +
+                "            <td width=\"52\" valign=\"top\">" +
+                "              <div style=\"width: 48px; height: 48px; border-radius: 50%; background-color: #1a1a2e; overflow: hidden; border: 2px solid #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">"
+                +
+                "                <img src=\"https://ui-avatars.com/api/?name=JT&background=1a1a2e&color=FFE259&size=128\" width=\"48\" height=\"48\" style=\"display: block;\" alt=\"Logo\">"
+                +
+                "              </div>" +
+                "            </td>" +
+                "            <td style=\"padding-left: 15px;\" valign=\"top\">" +
+                "              <div style=\"font-size: 15px; font-weight: 800; color: #1a1a2e; margin-bottom: 2px;\">" +
+                title
+                + " <span style=\"font-size: 12px; color: #adb5bd; font-weight: 400; margin-left: 4px;\">• Vừa xong</span>"
+                +
+                "              </div>" +
+                "              <div style=\"font-size: 14px; color: #4b5563; line-height: 1.5;\">" +
+                content +
+                "              </div>" +
+                "            </td>" +
+                "            <td width=\"24\" align=\"right\" valign=\"middle\">" +
+                "              <div style=\"background-color: #f3f4f6; border-radius: 50%; width: 24px; height: 24px; text-align: center; line-height: 24px;\">"
+                +
+                "                <span style=\"color: #9ca3af; font-size: 12px;\">▼</span>" +
+                "              </div>" +
+                "            </td>" +
+                "          </tr>" +
+                "        </table>" +
+                "      </td>" +
+                "    </tr>" +
+                "  </table>" +
+                "  <div style=\"margin-top: 15px; font-size: 11px; color: #9ca3af; text-align: center; max-width: 500px;\">"
+                +
+                "    &copy; 2026 JobTracker Pro. All rights reserved." +
+                "  </div>" +
+                "</div>";
+
+        sendHtmlMessage(to, title, htmlBody);
+    }
+
+    @Async
+    public void sendVerificationEmail(String to, String token) {
+        String subject = "Verify your email - JobTracker Pro";
+        String verificationUrl = "http://localhost:5173/verify-email?token=" + token;
+        String htmlBody = "<h1>Welcome to JobTracker Pro!</h1>" +
+                "<p>Please click the link below to verify your email address:</p>" +
+                "<a href=\"" + verificationUrl + "\">Verify Email</a>" +
+                "<p>If you didn't create an account, you can ignore this email.</p>";
+        sendHtmlMessage(to, subject, htmlBody);
     }
 }

@@ -58,6 +58,9 @@ public class Interview {
 
     private Boolean wantContinue;
 
+    @Builder.Default
+    private boolean reminderSent = false;
+
     @Column(columnDefinition = "TEXT")
     private String notes;
 

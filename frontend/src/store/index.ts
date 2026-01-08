@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { JobApplication, User, ApplicationFilters, SortOptions, AuthResponse, Interview } from '../types';
-import { mockApplications, mockInterviews } from '../data/mockData';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import axiosInstance from '../api/axios';
 
@@ -34,14 +33,15 @@ export const useAuthStore = create<AuthState>()(
                         password
                     });
 
-                    const { token, name, email: userEmail, onboarded } = response.data;
+                    const { token, id, name, email: userEmail, onboarded } = response.data;
 
                     const user: User = {
-                        id: 'temp-id', // Backend should ideally return ID
+                        id,
                         email: userEmail,
                         name,
                         role: 'BASIC',
                         onboarded,
+                        emailNotificationsEnabled: response.data.emailNotificationsEnabled,
                         createdAt: new Date().toISOString(),
                     };
 
@@ -64,16 +64,16 @@ export const useAuthStore = create<AuthState>()(
                         name
                     });
 
-                    const { token, name: userName, email: userEmail, onboarded } = response.data;
+                    const { token, id, name: userName, email: userEmail, onboarded } = response.data;
 
-                    // If backend returns a token (auto-login), set state
                     if (token) {
                         const user: User = {
-                            id: 'temp-id',
+                            id,
                             email: userEmail,
                             name: userName,
                             role: 'BASIC',
                             onboarded,
+                            emailNotificationsEnabled: response.data.emailNotificationsEnabled,
                             createdAt: new Date().toISOString(),
                         };
 
@@ -110,7 +110,6 @@ export const useAuthStore = create<AuthState>()(
                     set({ user: { ...user, onboarded: true } });
                 } catch (error) {
                     console.error('Failed to complete onboarding:', error);
-                    // Still set locally to allow the user to proceed if the API fails but we want to be resilient
                     set({ user: { ...user, onboarded: true } });
                 }
             }
@@ -134,17 +133,20 @@ interface ApplicationState {
     viewMode: 'kanban' | 'table';
 
     // Actions
+    fetchApplications: () => Promise<void>;
+    fetchAllInterviews: () => Promise<void>;
+    fetchInterviews: (applicationId: string) => Promise<void>;
     setApplications: (applications: JobApplication[]) => void;
-    addApplication: (application: JobApplication) => void;
-    updateApplication: (id: string, updates: Partial<JobApplication>) => void;
-    deleteApplication: (id: string) => void;
+    addApplication: (application: Omit<JobApplication, 'id' | 'userId' | 'createdAt' | 'updatedAt'>) => Promise<void>;
+    updateApplication: (id: string, updates: Partial<JobApplication>) => Promise<void>;
+    deleteApplication: (id: string) => Promise<void>;
     selectApplication: (id: string | null) => void;
 
     // Interview Actions
     setInterviews: (interviews: Interview[]) => void;
-    addInterview: (interview: Interview) => void;
-    updateInterview: (id: string, updates: Partial<Interview>) => void;
-    deleteInterview: (id: string) => void;
+    addInterview: (interview: Omit<Interview, 'id' | 'createdAt'>) => Promise<void>;
+    updateInterview: (id: string, updates: Partial<Interview>) => Promise<void>;
+    deleteInterview: (id: string) => Promise<void>;
 
     setFilters: (filters: ApplicationFilters) => void;
     setSortOptions: (options: SortOptions) => void;
@@ -156,8 +158,8 @@ interface ApplicationState {
 export const useApplicationStore = create<ApplicationState>()(
     persist(
         (set, get) => ({
-            applications: mockApplications,
-            interviews: mockInterviews,
+            applications: [],
+            interviews: [],
             selectedApplication: null,
             filters: {},
             sortOptions: {
@@ -166,50 +168,123 @@ export const useApplicationStore = create<ApplicationState>()(
             },
             viewMode: 'kanban',
 
+            fetchApplications: async () => {
+                try {
+                    const response = await axiosInstance.get<JobApplication[]>(API_ENDPOINTS.APPLICATIONS);
+                    set({ applications: response.data });
+                } catch (error) {
+                    console.error('Failed to fetch applications:', error);
+                }
+            },
+
+            fetchInterviews: async (applicationId) => {
+                try {
+                    const response = await axiosInstance.get<Interview[]>(API_ENDPOINTS.INTERVIEWS(applicationId));
+                    set({ interviews: response.data });
+                } catch (error) {
+                    console.error('Failed to fetch interviews:', error);
+                }
+            },
+
+            fetchAllInterviews: async () => {
+                try {
+                    const response = await axiosInstance.get<Interview[]>('/interviews');
+                    set({ interviews: response.data });
+                } catch (error) {
+                    console.error('Failed to fetch all interviews:', error);
+                }
+            },
+
             setApplications: (applications) => set({ applications }),
             setInterviews: (interviews) => set({ interviews }),
 
-            addApplication: (application) => set((state) => ({
-                applications: [application, ...state.applications]
-            })),
+            addApplication: async (application) => {
+                try {
+                    const response = await axiosInstance.post<JobApplication>(API_ENDPOINTS.APPLICATIONS, application);
+                    set((state) => ({
+                        applications: [response.data, ...state.applications]
+                    }));
+                } catch (error) {
+                    console.error('Failed to add application:', error);
+                    throw error;
+                }
+            },
 
-            addInterview: (interview) => set((state) => ({
-                interviews: [interview, ...state.interviews]
-            })),
+            addInterview: async (interview) => {
+                try {
+                    const response = await axiosInstance.post<Interview>('/interviews', interview);
+                    set((state) => ({
+                        interviews: [response.data, ...state.interviews]
+                    }));
+                } catch (error) {
+                    console.error('Failed to add interview:', error);
+                    throw error;
+                }
+            },
 
-            updateApplication: (id, updates) => set((state) => ({
-                applications: state.applications.map(app =>
-                    app.id === id ? { ...app, ...updates, updatedAt: new Date().toISOString() } : app
-                ),
-                selectedApplication: state.selectedApplication?.id === id
-                    ? { ...state.selectedApplication, ...updates }
-                    : state.selectedApplication
-            })),
+            updateApplication: async (id, updates) => {
+                try {
+                    const response = await axiosInstance.put<JobApplication>(API_ENDPOINTS.APPLICATION_BY_ID(id), updates);
+                    set((state) => ({
+                        applications: state.applications.map(app =>
+                            app.id === id ? response.data : app
+                        ),
+                        selectedApplication: state.selectedApplication?.id === id
+                            ? response.data
+                            : state.selectedApplication
+                    }));
+                } catch (error) {
+                    console.error('Failed to update application:', error);
+                    throw error;
+                }
+            },
 
-            updateInterview: (id, updates) => set((state) => ({
-                interviews: state.interviews.map(int =>
-                    int.id === id ? { ...int, ...updates } : int
-                )
-            })),
+            updateInterview: async (id, updates) => {
+                try {
+                    const response = await axiosInstance.put<Interview>(`/interviews/${id}`, updates);
+                    set((state) => ({
+                        interviews: state.interviews.map(int =>
+                            int.id === id ? response.data : int
+                        )
+                    }));
+                } catch (error) {
+                    console.error('Failed to update interview:', error);
+                    throw error;
+                }
+            },
 
-            deleteApplication: (id) => set((state) => ({
-                applications: state.applications.filter(app => app.id !== id),
-                interviews: state.interviews.filter(int => int.applicationId !== id),
-                selectedApplication: state.selectedApplication?.id === id ? null : state.selectedApplication
-            })),
+            deleteApplication: async (id) => {
+                try {
+                    await axiosInstance.delete(API_ENDPOINTS.APPLICATION_BY_ID(id));
+                    set((state) => ({
+                        applications: state.applications.filter(app => app.id !== id),
+                        interviews: state.interviews.filter(int => int.applicationId !== id),
+                        selectedApplication: state.selectedApplication?.id === id ? null : state.selectedApplication
+                    }));
+                } catch (error) {
+                    console.error('Failed to delete application:', error);
+                    throw error;
+                }
+            },
 
-            deleteInterview: (id) => set((state) => ({
-                interviews: state.interviews.filter(int => int.id !== id)
-            })),
+            deleteInterview: async (id) => {
+                try {
+                    await axiosInstance.delete(`/interviews/${id}`);
+                    set((state) => ({
+                        interviews: state.interviews.filter(int => int.id !== id)
+                    }));
+                } catch (error) {
+                    console.error('Failed to delete interview:', error);
+                    throw error;
+                }
+            },
 
             selectApplication: (id) => set((state) => ({
                 selectedApplication: id ? state.applications.find(app => app.id === id) || null : null
             })),
 
             setFilters: (filters) => set({ filters }),
-
             setSortOptions: (options) => set({ sortOptions: options }),
-
             setViewMode: (mode) => set({ viewMode: mode }),
 
             reorderApplications: (startIndex, endIndex) => set((state) => {
@@ -223,7 +298,6 @@ export const useApplicationStore = create<ApplicationState>()(
                 const { applications, filters, sortOptions } = get();
                 let filtered = [...applications];
 
-                // Apply filters
                 if (filters.status && filters.status.length > 0) {
                     filtered = filtered.filter(app => filters.status!.includes(app.status));
                 }
@@ -263,7 +337,6 @@ export const useApplicationStore = create<ApplicationState>()(
                     filtered = filtered.filter(app => app.appliedDate <= filters.dateTo!);
                 }
 
-                // Apply sorting
                 filtered.sort((a, b) => {
                     const aValue = a[sortOptions.field];
                     const bValue = b[sortOptions.field];
@@ -293,14 +366,22 @@ export const useApplicationStore = create<ApplicationState>()(
 // UI STORE
 // ========================================
 
+interface NotificationSettings {
+    followUpEnabled: boolean;
+    afterApplyingDays: number;
+    afterInterviewDays: number;
+}
+
 interface UIState {
     sidebarOpen: boolean;
     theme: 'dark' | 'light';
     primaryHue: number;
+    notificationSettings: NotificationSettings;
     toggleSidebar: () => void;
     setSidebarOpen: (open: boolean) => void;
     setTheme: (theme: 'dark' | 'light') => void;
     setPrimaryHue: (hue: number) => void;
+    setNotificationSettings: (settings: Partial<NotificationSettings>) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -309,11 +390,19 @@ export const useUIStore = create<UIState>()(
             sidebarOpen: true,
             theme: 'dark',
             primaryHue: 250,
+            notificationSettings: {
+                followUpEnabled: true,
+                afterApplyingDays: 3,
+                afterInterviewDays: 1
+            },
 
             toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
             setSidebarOpen: (open) => set({ sidebarOpen: open }),
             setTheme: (theme) => set({ theme }),
-            setPrimaryHue: (hue) => set({ primaryHue: hue })
+            setPrimaryHue: (hue) => set({ primaryHue: hue }),
+            setNotificationSettings: (newSettings) => set((state) => ({
+                notificationSettings: { ...state.notificationSettings, ...newSettings }
+            }))
         }),
         {
             name: STORAGE_KEYS.THEME

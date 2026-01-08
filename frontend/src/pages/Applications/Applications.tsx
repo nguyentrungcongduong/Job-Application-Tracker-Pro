@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Plus, Search, Filter, LayoutGrid, List, X } from 'lucide-react';
+import { Plus, Search, Filter, LayoutGrid, List, X, Briefcase } from 'lucide-react';
 import { useApplicationStore } from '../../store';
 import KanbanBoard from '../../components/Applications/KanbanBoard.tsx';
 import ApplicationTable from '../../components/Applications/ApplicationTable.tsx';
@@ -8,21 +8,26 @@ import type { ApplicationStatus, Priority } from '../../types';
 import './Applications.css';
 
 const STATUS_OPTIONS: ApplicationStatus[] = [
-  'WISHLIST', 'CV_IN_PROGRESS', 'APPLIED', 'HR_SCREEN', 'INTERVIEW_1', 
+  'WISHLIST', 'CV_IN_PROGRESS', 'APPLIED', 'HR_SCREEN', 'INTERVIEW_1',
   'INTERVIEW_2', 'FINAL_INTERVIEW', 'OFFER_RECEIVED', 'OFFER_ACCEPTED', 'REJECTED'
 ];
 
 const PRIORITY_OPTIONS: Priority[] = ['HIGH', 'MEDIUM', 'LOW'];
 
 const Applications = () => {
-  const { 
-    viewMode, 
-    setViewMode, 
-    applications, 
-    filters, 
-    setFilters 
+  const {
+    viewMode,
+    setViewMode,
+    applications,
+    filters,
+    setFilters,
+    fetchApplications
   } = useApplicationStore();
-  
+
+  useEffect(() => {
+    fetchApplications();
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState(filters.search || '');
   const [showFilters, setShowFilters] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -43,7 +48,7 @@ const Applications = () => {
     const updated = current.includes(value)
       ? current.filter(v => v !== value)
       : [...current, value];
-    
+
     setFilters({ ...filters, [key]: updated });
   };
 
@@ -57,14 +62,19 @@ const Applications = () => {
     <div className="applications-page">
       <div className="page-header">
         <div className="page-title-row">
-          <div>
-            <h1 className="page-title">Applications</h1>
-            <p className="page-subtitle">
-              Manage and track all your job applications
-            </p>
+          <div className="header-title-section">
+            <div className="header-icon-wrapper">
+              <Briefcase size={28} />
+            </div>
+            <div>
+              <h1 className="page-title">Applications</h1>
+              <p className="page-subtitle">
+                Manage and track all your job applications
+              </p>
+            </div>
           </div>
           <div className="page-actions">
-            <button 
+            <button
               className="btn btn-primary"
               onClick={() => setShowModal(true)}
             >
@@ -86,8 +96,8 @@ const Applications = () => {
               className="input"
             />
             {searchQuery && (
-              <button 
-                className="btn-icon-sm" 
+              <button
+                className="btn-icon-sm"
                 onClick={() => setSearchQuery('')}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)' }}
               >
@@ -97,7 +107,7 @@ const Applications = () => {
           </div>
 
           <div className="toolbar-actions">
-            <button 
+            <button
               className={`btn btn-secondary ${showFilters ? 'active' : ''} ${activeFiltersCount > 0 ? 'has-filters' : ''}`}
               onClick={() => setShowFilters(!showFilters)}
             >
@@ -132,7 +142,7 @@ const Applications = () => {
               <span className="text-sm font-bold">Active Filters</span>
               <button className="btn-text-sm" onClick={clearFilters}>Clear All</button>
             </div>
-            
+
             <div className="filter-grid">
               <div className="filter-section">
                 <label className="filter-label">Status</label>

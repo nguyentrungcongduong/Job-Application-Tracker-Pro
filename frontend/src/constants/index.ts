@@ -298,10 +298,22 @@ export const API_ENDPOINTS = {
     SOURCE_PERFORMANCE: '/analytics/source-performance',
     FIT_SCORE: (appId: string) => `/analytics/fit-score/${appId}`,
 
+    // Resumes
+    RESUMES: '/resumes',
+    RESUME_MATCH: '/resumes/match',
+
+    // Notifications
+    NOTIFICATIONS: '/notifications',
+    NOTIFICATIONS_UNREAD: '/notifications/unread-count',
+    NOTIFICATIONS_READ: (id: string) => `/notifications/${id}/read`,
+    NOTIFICATIONS_READ_ALL: '/notifications/read-all',
+
     // Follow-ups
     FOLLOW_UPS: '/follow-ups',
     FOLLOW_UP_BY_ID: (id: string) => `/follow-ups/${id}`,
 
     // Users
-    COMPLETE_ONBOARDING: '/users/onboarding/complete'
+    COMPLETE_ONBOARDING: '/users/onboarding/complete',
+    EMAIL_NOTIFICATIONS_SETTINGS: '/users/settings/email-notifications',
+    NOTIFICATION_SETTINGS: '/users/settings/notifications'
 };

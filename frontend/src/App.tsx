@@ -4,6 +4,8 @@ import Layout from './components/Layout/Layout';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Applications from './pages/Applications/Applications';
 import Analytics from './pages/Analytics/Analytics';
+import ResumeManagement from './pages/Resumes/ResumeManagement';
+import Notifications from './pages/Notifications/Notifications';
 import Settings from './pages/Settings/Settings';
 import Auth from './pages/Auth/Auth';
 import Onboarding from './pages/Onboarding/Onboarding';
@@ -77,7 +79,9 @@ function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="applications" element={<Applications />} />
+          <Route path="resumes" element={<ResumeManagement />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="notifications" element={<Notifications />} />
           <Route path="settings" element={<Settings />} />
         </Route>
 

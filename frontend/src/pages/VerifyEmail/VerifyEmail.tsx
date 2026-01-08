@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axiosInstance from '../../api/axios';
 import { API_ENDPOINTS } from '../../constants';
-import { CheckCircle2, XCircle, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, ArrowRight } from 'lucide-react';
+import Logo from '../../components/Layout/Logo';
 import '../Auth/Auth.css'; // Reuse some background styles
 
 const VerifyEmail = () => {
@@ -43,7 +44,7 @@ const VerifyEmail = () => {
             <div className="auth-card animate-fade-in glass text-center p-12">
                 <div className="logo mb-8 justify-center">
                     <div className="logo-icon">
-                        <Sparkles size={32} />
+                        <Logo size={72} />
                     </div>
                     <div className="logo-text">
                         <h1 className="gradient-text">JobTracker</h1>

@@ -1,11 +1,13 @@
 import { useState, useRef } from 'react';
-import { User, Bell, Palette, LogOut, Check } from 'lucide-react';
+import { User, Bell, Palette, LogOut, Check, Settings as SettingsIcon } from 'lucide-react';
 import { useAuthStore, useUIStore } from '../../store';
+import axiosInstance from '../../api/axios';
+import { API_ENDPOINTS } from '../../constants';
 import './Settings.css';
 
 const Settings = () => {
   const { user, logout, setUser } = useAuthStore();
-  const { theme, setTheme, primaryHue, setPrimaryHue } = useUIStore();
+  const { theme, setTheme, primaryHue, setPrimaryHue, notificationSettings, setNotificationSettings } = useUIStore();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,6 +27,20 @@ const Settings = () => {
     }
   };
 
+  const handleEmailToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enabled = e.target.checked;
+    try {
+      await axiosInstance.post(API_ENDPOINTS.EMAIL_NOTIFICATIONS_SETTINGS, enabled);
+      // Optimistic update
+      if (user) {
+        setUser({ ...user, emailNotificationsEnabled: enabled });
+      }
+    } catch (error) {
+      console.error('Failed to update email settings', error);
+      // Revert if needed? For MVP, just log.
+    }
+  };
+
   const themes = [
     { name: 'Purple', hue: 250, color: 'hsl(250, 75%, 58%)' },
     { name: 'Blue', hue: 210, color: 'hsl(210, 75%, 58%)' },
@@ -36,10 +52,10 @@ const Settings = () => {
   ];
 
   const sections = [
-    { 
+    {
       id: 'profile',
-      icon: User, 
-      title: 'Profile Settings', 
+      icon: User,
+      title: 'Profile Settings',
       description: 'Manage your personal information and preferences',
       content: (
         <div className="settings-profile">
@@ -47,11 +63,11 @@ const Settings = () => {
             <div className="avatar-large">
               {user?.avatar ? <img src={user.avatar} alt={user.name} /> : user?.name.charAt(0)}
             </div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
-              style={{ display: 'none' }} 
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
               accept="image/*"
             />
             <button className="btn btn-secondary btn-sm" onClick={handlePhotoClick}>Change Photo</button>
@@ -69,10 +85,10 @@ const Settings = () => {
         </div>
       )
     },
-    { 
+    {
       id: 'appearance',
-      icon: Palette, 
-      title: 'Appearance', 
+      icon: Palette,
+      title: 'Appearance',
       description: 'Customize theme & colors (Click icon to change color)',
       action: () => setShowColorPicker(!showColorPicker),
       content: (
@@ -82,8 +98,8 @@ const Settings = () => {
               <p className="picker-label">Select Accent Color</p>
               <div className="color-grid">
                 {themes.map((t) => (
-                  <button 
-                    key={t.hue} 
+                  <button
+                    key={t.hue}
                     className={`color-btn ${primaryHue === t.hue ? 'active' : ''}`}
                     style={{ backgroundColor: t.color }}
                     onClick={() => setPrimaryHue(t.hue)}
@@ -95,16 +111,16 @@ const Settings = () => {
               </div>
             </div>
           )}
-          
+
           <div className="theme-toggle-group">
-            <div 
+            <div
               className={`theme-card ${theme === 'light' ? 'active' : ''}`}
               onClick={() => setTheme('light')}
             >
               <div className="theme-preview light"></div>
               <span>Light Mode</span>
             </div>
-            <div 
+            <div
               className={`theme-card ${theme === 'dark' ? 'active' : ''}`}
               onClick={() => setTheme('dark')}
             >
@@ -115,10 +131,10 @@ const Settings = () => {
         </div>
       )
     },
-    { 
+    {
       id: 'notifications',
-      icon: Bell, 
-      title: 'Notifications', 
+      icon: Bell,
+      title: 'Notifications',
       description: 'Stay updated on your application progress',
       content: (
         <div className="settings-list">
@@ -129,23 +145,103 @@ const Settings = () => {
             </div>
             <input type="checkbox" defaultChecked />
           </div>
+
           <div className="settings-item-row">
             <div>
-              <div className="item-title">Application Follow-ups</div>
-              <div className="item-desc">Remind me to follow up if no response after 7 days</div>
+              <div className="item-title">Email Notifications</div>
+              <div className="item-desc">Receive updates via email</div>
             </div>
-            <input type="checkbox" defaultChecked />
+            <input
+              type="checkbox"
+              checked={user?.emailNotificationsEnabled || false}
+              onChange={handleEmailToggle}
+            />
+          </div>
+
+          {/* Follow-up Suggestions Section */}
+          <div className="settings-group">
+            <div className="settings-item-row">
+              <div>
+                <div className="item-title">Follow-up Suggestions</div>
+                <div className="item-desc">Get smart reminders when it's time to follow up with recruiters</div>
+              </div>
+              <div className="toggle-wrapper">
+                <input
+                  type="checkbox"
+                  checked={notificationSettings.followUpEnabled}
+                  onChange={(e) => setNotificationSettings({ followUpEnabled: e.target.checked })}
+                />
+              </div>
+            </div>
+
+            {notificationSettings.followUpEnabled && (
+              <div className="sub-settings animate-fade-in" style={{
+                marginTop: 12,
+                padding: 16,
+                background: 'rgba(255,255,255,0.03)',
+                borderRadius: 8,
+                border: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                <div className="form-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  <div className="form-group">
+                    <label style={{ fontSize: '0.85rem', marginBottom: 6 }}>After applying (No response)</label>
+                    <select
+                      className="input"
+                      value={notificationSettings.afterApplyingDays}
+                      onChange={(e) => setNotificationSettings({ afterApplyingDays: parseInt(e.target.value) })}
+                    >
+                      <option value={3}>3 days</option>
+                      <option value={5}>5 days</option>
+                      <option value={7}>7 days</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label style={{ fontSize: '0.85rem', marginBottom: 6 }}>After interview (No feedback)</label>
+                    <select
+                      className="input"
+                      value={notificationSettings.afterInterviewDays}
+                      onChange={(e) => setNotificationSettings({ afterInterviewDays: parseInt(e.target.value) })}
+                    >
+                      <option value={1}>1 day</option>
+                      <option value={2}>2 days</option>
+                      <option value={3}>3 days</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )
     }
   ];
 
+  const handleSaveNotifications = async () => {
+    try {
+      await axiosInstance.post(API_ENDPOINTS.NOTIFICATION_SETTINGS, {
+        emailNotificationsEnabled: user?.emailNotificationsEnabled || false,
+        followUpApplyingDays: notificationSettings.afterApplyingDays,
+        followUpInterviewDays: notificationSettings.afterInterviewDays
+      });
+      alert('Notification settings saved successfully!');
+    } catch (error) {
+      console.error('Failed to save notification settings', error);
+      alert('Failed to save notification settings. Please try again.');
+    }
+  };
+
   return (
     <div className="settings-page">
       <div className="page-header">
-        <h1 className="page-title">Settings</h1>
-        <p className="page-subtitle">Manage your account and app configurations</p>
+        <div className="header-title-section">
+          <div className="header-icon-wrapper">
+            <SettingsIcon size={28} />
+          </div>
+          <div>
+            <h1 className="page-title">Settings</h1>
+            <p className="page-subtitle">Manage your account and app configurations</p>
+          </div>
+        </div>
       </div>
 
       <div className="settings-container">
@@ -167,7 +263,7 @@ const Settings = () => {
           {sections.map(section => (
             <div key={section.id} id={section.id} className="settings-section card">
               <div className="section-header">
-                <div 
+                <div
                   className={`header-icon-bg ${section.id === 'appearance' ? 'clickable' : ''}`}
                   onClick={section.action}
                   style={section.id === 'appearance' ? { cursor: 'pointer' } : {}}
@@ -183,7 +279,12 @@ const Settings = () => {
                 {section.content}
               </div>
               <div className="section-footer">
-                <button className="btn btn-primary">Save Changes</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={section.id === 'notifications' ? handleSaveNotifications : undefined}
+                >
+                  Save Changes
+                </button>
               </div>
             </div>
           ))}

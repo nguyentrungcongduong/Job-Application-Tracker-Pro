@@ -36,4 +36,11 @@ public class JobApplicationController {
         service.deleteApplication(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<JobApplicationDTO> checkDuplicate(
+            @RequestParam String companyName,
+            @RequestParam String position) {
+        return ResponseEntity.ok(service.checkDuplicate(companyName, position));
+    }
 }

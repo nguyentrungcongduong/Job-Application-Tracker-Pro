@@ -50,16 +50,23 @@ public class JobApplicationService {
         JobApplication application = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
-        // Simple update logic - can be refined
-        JobApplication updated = mapper.toEntity(dto);
-        updated.setId(id);
-        updated.setUser(application.getUser());
+        mapper.updateEntityFromDto(dto, application);
 
-        return mapper.toDto(repository.save(updated));
+        return mapper.toDto(repository.save(application));
     }
 
     @Transactional
     public void deleteApplication(UUID id) {
         repository.deleteById(id);
+    }
+
+    public JobApplicationDTO checkDuplicate(String companyName, String position) {
+        User user = getCurrentUser();
+        List<JobApplication> existing = repository.findByUserAndCompanyNameIgnoreCaseAndPositionIgnoreCase(user,
+                companyName, position);
+        if (!existing.isEmpty()) {
+            return mapper.toDto(existing.get(0));
+        }
+        return null;
     }
 }
