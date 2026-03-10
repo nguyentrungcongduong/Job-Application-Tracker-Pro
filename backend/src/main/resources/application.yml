@@ -46,9 +46,9 @@ spring:
     name: Job Application Tracker Pro API
 
   datasource:
-    url: ${NEON_JDBC_URL:jdbc:postgresql://localhost:5432/job_tracker}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123456}
+    url: ${NEON_JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
