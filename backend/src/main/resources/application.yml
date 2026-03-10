@@ -46,11 +46,10 @@ spring:
     name: Job Application Tracker Pro API
 
   datasource:
-    jdbc-url: ${NEON_JDBC_URL}
+    url: ${NEON_JDBC_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    type: com.zaxxer.hikari.HikariDataSource
 
   jpa:
     hibernate:
