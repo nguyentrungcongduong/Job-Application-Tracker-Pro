@@ -46,7 +46,7 @@ spring:
     name: Job Application Tracker Pro API
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/job_tracker}
+    url: ${NEON_JDBC_URL:jdbc:postgresql://localhost:5432/job_tracker}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
@@ -70,7 +70,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: congduongnguyentrung@gmail.com
-    password: wwlb jeqo fyzk dmfk
+    password: xigf gcas azai fmpg
     properties:
       mail:
         smtp:
@@ -83,5 +83,5 @@ server:
 
 # JWT Configuration
 jwt:
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  secret: RzhNxMsjGpQ2z93VTZ7jjx2E8NplEZ447ls1gQ5sAwDRquFv/u3VoQvdeF8xW1HRP+zOzeEIpA6oXx+iL4PorQ==
   expiration: 86400000 # 24 hours
