@@ -1,11 +1,54 @@
+#spring:
+#  application:
+#    name: Job Application Tracker Pro API
+#
+#  datasource:
+#    url: ${DB_URL:jdbc:postgresql://localhost:5432/job_tracker}
+#    username: ${DB_USERNAME:postgres}
+#    password: ${DB_PASSWORD}
+#    driver-class-name: org.postgresql.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+#
+#  servlet:
+#    multipart:
+#      max-file-size: 10MB
+#      max-request-size: 10MB
+#  # Mail Configuration (Gmail Example)
+#  mail:
+#    host: ${MAIL_HOST:smtp.gmail.com}
+#    port: ${MAIL_PORT:587}
+#    username: ${MAIL_USERNAME}
+#    password: ${MAIL_PASSWORD}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#
+#server:
+#  port: ${SERVER_PORT:8080}
+#
+## JWT Configuration
+#jwt:
+#  secret: ${JWT_SECRET}
+#  expiration: ${JWT_EXPIRATION:86400000} # 24 hours
+
 spring:
   application:
     name: Job Application Tracker Pro API
-  
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/job_tracker}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,10 +65,10 @@ spring:
       max-request-size: 10MB
   # Mail Configuration (Gmail Example)
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: smtp.gmail.com
+    port: 587
+    username: congduongnguyentrung@gmail.com
+    password: wwlb jeqo fyzk dmfk
     properties:
       mail:
         smtp:
@@ -34,9 +77,9 @@ spring:
             enable: true
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${PORT:8080}
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: ${JWT_EXPIRATION:86400000} # 24 hours
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  expiration: 86400000 # 24 hours
